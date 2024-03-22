@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "title": "producto prueba",
+        "description": "Este es un producto prueba",
+        "price": "$200",
+        "thumbnail": "sin imagen",
+        "code": "abc123",
+        "stock": 12
+    },
+    {
+        "id": 2,
+        "title": "PS3",
+        "description": "Este es un producto prueba",
+        "price": "$200",
+        "thumbnail": "sin imagen",
+        "code": "abc124",
+        "stock": 25
+    },
+    {
+        "id": 3,
+        "title": "producto prueba",
+        "description": "Este es un producto prueba",
+        "price": "$200",
+        "thumbnail": "sin imagen",
+        "code": "abc125",
+        "stock": 41
+    },
+    {
+        "id": 4,
+        "title": "Nintendo Gameboy",
+        "description": "Consola portatil retro",
+        "price": "$520",
+        "thumbnail": "sin imagen",
+        "code": "abc126",
+        "stock": 2
+    }
+]

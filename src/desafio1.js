@@ -6,15 +6,15 @@ class ProductManager {
     static idProducto = 1;
 
     constructor() {
-        this.products = this.getProducts()
-        this.path = path.join(__dirname, "./data/productos.json");
-
+        this.products = []
+        this.path = path.join(__dirname, "../data/productos.json");
+        this.getProducts()
     }
 
-    getProducts() {
+    async getProducts() {
         try {
             if (fs.existsSync(this.path)) {
-                const json = fs.promises.readFile(this.path, { encoding: "utf-8" })
+                const json = await fs.promises.readFile(this.path, { encoding: "utf-8" })
                 return JSON.parse(json);
             } else {
                 return [];
@@ -77,20 +77,20 @@ class ProductManager {
         if (index >= 0) {
             const allowedParams = ['title', 'description', 'price', 'thumbnail', 'stock'];
             const updateKeys = Object.keys(updateData);
-    
+
             if (updateKeys.some(key => !allowedParams.includes(key))) {
                 console.log(`Error: Los parámetros añadidos no son válidos para la actualización. Solo se admitirán ${allowedParams}`);
                 return 'Error: Parámetros no válidos';
             }
-    
+
             if (updateKeys.includes('price') && typeof updateData.price !== 'number') {
                 return 'Error: El precio debe ser un número';
             }
-    
+
             if (updateKeys.includes('stock') && typeof updateData.stock !== 'number') {
                 return 'Error: El stock debe ser un número';
             }
-    
+
             this.products[index] = { ...this.products[index], ...updateData };
             await this.saveProduct();
             console.log(`El producto con la ID: ${id} ha sido actualizado`);
@@ -100,7 +100,7 @@ class ProductManager {
             return 'Error: Producto no encontrado';
         }
     }
-    
+
 
 
 
@@ -117,4 +117,3 @@ class ProductManager {
 };
 
 module.exports = ProductManager;
-

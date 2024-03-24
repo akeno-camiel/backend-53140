@@ -8,14 +8,19 @@ class ProductManager {
     constructor() {
         this.products = []
         this.path = path.join(__dirname, "../data/productos.json");
+        this.init();
         this.getProducts()
+    }
+
+    async init() {
+        const maxId = Math.max(...this.products.map(product => product.id), 0);
+        ProductManager.idProducto = maxId + 1;
     }
 
     async getProducts() {
         try {
             if (fs.existsSync(this.path)) {
-                const json = await fs.promises.readFile(this.path, { encoding: "utf-8" })
-                return JSON.parse(json);
+                return JSON.parse(await fs.promises.readFile(this.path, { encoding: "utf-8" }));
             } else {
                 return [];
             }

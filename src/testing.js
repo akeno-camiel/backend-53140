@@ -1,13 +1,44 @@
-const ProductManager = require("./desafio1");
+// const ProductManager = require("./dao/ProductManager");
 
-const product = new ProductManager();
+// const product = new ProductManager("./data/productos.json");
 
-const execute = async () => {
-    console.log(await product.addProduct('producto prueba', 'Este es un producto prueba', 200, 'sin imagen', 'abc123', 12));
-    console.log(await product.addProduct('PS3', 'Este es un producto prueba', 200, 'sin imagen', 'abc124', 25));
-    console.log(await product.addProduct('producto prueba', 'Este es un producto prueba', 200, 'sin imagen', 'abc125', 41));
+// const execute = async () => {
+//     console.log(await product.addProduct({
+//         "title": "producto prueba",
+//         "description": "Este es un producto prueba",
+//         "price": 200,
+//         "thumbnail": "sin imagen",
+//         "code": "abc123",
+//         "stock": 12,
+//         "category": "consola"
+//     }));
+//     console.log(await product.addProduct({
+//         "title": "PS3",
+//         "description": "Este es un producto prueba",
+//         "price": 200,
+//         "thumbnail": "sin imagen",
+//         "code": "abc124",
+//         "stock": 25,
+//         "category": "consola"
+//     }));
+//     console.log(await product.addProduct({
+//         "title": "producto prueba",
+//         "description": "Este es un producto prueba",
+//         "price": 200,
+//         "thumbnail": "sin imagen",
+//         "code": "abc125",
+//         "stock": 41,
+//         "category": "consola"
+//     }));
+//     console.log(await product.addProduct({
+//         "title": "Nintendo Gameboy",
+//         "description": "Consola portatil retro",
+//         "price": 520,
+//         "thumbnail": "sin imagen",
+//         "code": "abc126",
+//         "stock": 2,
+//         "category": "consola"
+//     }));
+// };
 
-    console.log(await product.addProduct('Nintendo Gameboy', 'Consola portatil retro', 520, 'sin imagen', 'abc126', 2));
-};
-
-execute ();
+// execute();

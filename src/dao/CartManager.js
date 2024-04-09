@@ -1,4 +1,7 @@
 const fs = require('fs');
+const productManager = require('./ProductManager.js');
+const path = require('path');
+const rutaProducto = path.join(__dirname, '..', 'data', 'productos.json');
 
 class CartManager {
 
@@ -6,6 +9,7 @@ class CartManager {
 
     constructor(rutaArchivo) {
         this.path = rutaArchivo;
+        this.init();
     };
 
     async init() {
@@ -17,10 +21,10 @@ class CartManager {
         return CartManager.idcart;
     };
 
-    async addCart(newCarrito) {
-        let carts = await this.getCarts();
+    async addCart() {
         let id = await this.init();
-        newCarrito = {
+        const carts = await this.getCarts();
+        const newCarrito = {
             id: id,
             products: []
         };
@@ -34,7 +38,13 @@ class CartManager {
         if (fs.existsSync(this.path)) {
             const data = await fs.promises.readFile(this.path, { encoding: "utf-8" });
             console.log("Datos leídos del archivo JSON:", data);
-            return JSON.parse(data);
+            const carts = JSON.parse(data);
+            if (Array.isArray(carts)) {
+                return carts;
+            } else {
+                console.log("El contenido del archivo JSON no es un array válido.");
+                return [];
+            }
         } else {
             console.log(`El archivo JSON no existe en la ruta: ${this.path}. Creando un nuevo archivo...`);
             await this.saveCart([]);
@@ -55,24 +65,46 @@ class CartManager {
         return cart;
     };
 
-    async addProductToCart(cid, pid) {
+    async getCartsProducts(id) {
         const carts = await this.getCarts();
-        const index = carts.findIndex(cart => cart.id === cid)
-        if (index !== -1) {
-            const cartById = await this.getCartsById(cid)
-            const productInCart = cartById.findIndex(product => product.id === pid)
-            if (productInCart !== -1) {
-                cartById[productInCart].quantity = cartById[productInCart].quantity + 1
-            } else {
-                const updatedCartById = await this.getCartsById(cid);
-                updatedCartById.push({ pid, quantity: 1 });
-                await this.saveCart(updatedCartById);
-            }
-            carts[index].products = cartById
+        const cart = carts.find(c => c.id === id);
+        return cart.products;
+    };
 
-            await this.saveCart(carts)
-            console.log('Archivo guardado correctamente');
+    async addProductToCart(cid, pid) {
+        try {
+            const carts = await this.getCarts();
+            const index = carts.findIndex(cart => cart.id === cid);
+
+            if (index !== -1) {
+                const cart = carts[index];
+                const existingProductIndex = cart.products.findIndex(product => product.id === pid);
+
+                if (existingProductIndex !== -1) {
+                    cart.products[existingProductIndex].quantity++;
+                } else {
+                    const p = new productManager(rutaProducto);
+                    await p.getProducts();
+                    const product = await p.getProductsById(pid);
+
+                    if (!product || product === "Not found") {
+                        return `Producto con id ${pid} no encontrado`;
+                    }
+
+                    cart.products.push({ id: pid, quantity: 1 });
+                }
+
+                carts[index] = cart;
+                await this.saveCart(carts);
+                return cart;
+            } else {
+                return `Carrito con id ${cid} no encontrado`;
+            }
+        } catch (error) {
+            return `Error al añadir producto: ${error}`;
         }
     };
+
+
 };
 module.exports = CartManager;

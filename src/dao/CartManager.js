@@ -1,14 +1,13 @@
-const fs = require('fs');
-const productManager = require('./ProductManager.js');
-const path = require('path');
-const rutaProducto = path.join(__dirname, '..', 'data', 'productos.json');
+import fs from 'fs';
+import productManager from "./ProductManager.js";
+import __dirname from "../utils.js";
+import path from "path";
+const rutaProducto = path.join(__dirname, './data/productos.json');
 
-class CartManager {
-
-    static idcart = 1;
-
-    constructor(rutaArchivo) {
-        this.path = rutaArchivo;
+export default class CartManager {
+    
+    constructor(rutaCart) {
+        this.path = rutaCart;
         this.init();
     };
 
@@ -37,7 +36,7 @@ class CartManager {
     async getCarts() {
         if (fs.existsSync(this.path)) {
             const data = await fs.promises.readFile(this.path, { encoding: "utf-8" });
-            console.log("Datos leídos del archivo JSON:", data);
+            // console.log("Datos leídos del archivo JSON:", data);
             const carts = JSON.parse(data);
             if (Array.isArray(carts)) {
                 return carts;
@@ -104,7 +103,4 @@ class CartManager {
             return `Error al añadir producto: ${error}`;
         }
     };
-
-
 };
-module.exports = CartManager;

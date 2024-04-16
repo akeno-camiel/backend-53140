@@ -1,9 +1,11 @@
-const { Router } = require('express');
-const CartManager = require('../dao/CartManager.js');
-const router = Router();
-const path = require('path');
-const rutaArchivo = path.join(__dirname, '..', 'data', 'carritos.json');
-const cartManager = new CartManager(rutaArchivo);
+import { Router } from 'express';
+import CartManager from '../dao/CartManager.js';
+export const router = Router();
+import path from 'path';
+import __dirname from "../utils.js";
+const rutaCart = path.join(__dirname, './data/carritos.json');
+const cartManager = new CartManager(rutaCart);
+
 
 router.get('/', async (req, res) => {
     try {
@@ -35,6 +37,7 @@ router.get('/:cid', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
+    let newCart
     try {
         res.setHeader('Content-Type', 'application/json')
         newCart = await cartManager.addCart();
@@ -54,9 +57,3 @@ router.post('/:cid/products/:pid', async (req, res) => {
         res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
     }
 })
-
-
-
-module.exports = router
-
-

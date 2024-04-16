@@ -1,9 +1,11 @@
-const { Router } = require('express');
-const ProductManager = require('../dao/ProductManager.js');
-const path = require('path');
-const rutaArchivo = path.join(__dirname, '..', 'data', 'productos.json');
-const productManager = new ProductManager(rutaArchivo);
-const router = Router();
+import { Router } from 'express';
+import ProductManager from '../dao/ProductManager.js';
+export const router = Router();
+import path from 'path';
+import __dirname from "../utils.js";
+const rutaProducto = path.join(__dirname, 'data', 'productos.json');
+const productManager = new ProductManager(rutaProducto);
+import { io } from "../app.js";
 
 
 router.get("/", async (req, res) => {
@@ -49,26 +51,31 @@ router.get("/:pid", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+    let nuevoProducto
     try {
         const { title, description, price, thumbnail, code, stock, category } = req.body;
 
-        if (!title || !description || !price || !thumbnail || !code || !stock || !category)
+        if (!title || !description || !price || !thumbnail || !code || !stock || !category) {
             return res.status(400).json({ error: 'Todos los campos son obligatorios' });
-
-        if (typeof price !== 'number' || typeof stock !== 'number')
+        }
+        if (typeof price !== 'number' || typeof stock !== 'number') {
             return res.status(400).json({ error: 'El precio y el stock deben ser números' })
+        }
 
         const products = await productManager.getProducts();
         const codeRepeat = products.some(product => product.code === code);
-        if (codeRepeat)
+        if (codeRepeat) {
             return res.status(400).json({ error: `Error, el código ${code} se está repitiendo` });
-        res.setHeader('Content-Type', 'application/json');
-        let nuevoProducto = await productManager.addProduct({ title, description, price, thumbnail, code, stock, category })
-        return res.status(200).json(nuevoProducto);
+        }
+        nuevoProducto = await productManager.addProduct({ title, description, price, thumbnail, code, stock, category })
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
     }
+    const productList= await productManager.getProducts();
+    io.emit("nuevoProducto", productList)
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(201).json(nuevoProducto);
 })
 
 router.put("/:pid", async (req, res) => {
@@ -79,24 +86,24 @@ router.put("/:pid", async (req, res) => {
         const currentProduct = await productManager.getProductsById(id);
 
         if (!('stock' in req.body)) {
-            stock = currentProduct.stock; 
+            stock = currentProduct.stock;
         }
         if (!('price' in req.body)) {
             price = currentProduct.price;
         }
         if (!('category' in req.body)) {
-            category = currentProduct.category; 
+            category = currentProduct.category;
         }
         if (!('thumbnail' in req.body)) {
             thumbnail = currentProduct.thumbnail;
         }
         if (!('title' in req.body)) {
-            title = currentProduct.title; 
+            title = currentProduct.title;
         }
         if (!('description' in req.body)) {
             description = currentProduct.description;
         }
-        
+
         if ((stock !== undefined && isNaN(stock)) || (price !== undefined && isNaN(price))) {
             return res.status(400).json({ error: "Stock y precio deben ser números" });
         }
@@ -109,14 +116,19 @@ router.put("/:pid", async (req, res) => {
 });
 
 router.delete("/:pid", async (req, res) => {
+    let productoEliminado
     try {
-        res.setHeader('Content-Type', 'application/json');
         let id = req.params.pid;
-        let usuarioEliminado = await productManager.deleteProduct(id);
+        productoEliminado = await productManager.deleteProduct(id);
 
-        return res.status(200).json(usuarioEliminado);
     } catch (error) {
         res.status(500).json({ error: "Error interno del servidor" });
     }
+
+    let products=productManager.getProducts();
+    io.emit("productoEliminado", products);
+
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(200).json(productoEliminado);
+
 })
-module.exports = router;

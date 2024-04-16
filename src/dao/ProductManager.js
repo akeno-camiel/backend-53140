@@ -1,11 +1,10 @@
-const fs = require('fs');
+import fs from 'fs';
 
-class ProductManager {
+export default class ProductManager {
 
-    static idProducto = 1;
-
-    constructor(rutaArchivo) {
-        this.path = rutaArchivo;
+    constructor(rutaProducto) {
+        this.path = rutaProducto;
+        console.log(rutaProducto);
     }
 
     async init() {
@@ -123,5 +122,3 @@ class ProductManager {
         }
     }
 };
-
-module.exports = ProductManager;

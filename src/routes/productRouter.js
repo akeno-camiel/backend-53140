@@ -1,17 +1,19 @@
+// import path from 'path';
+// import __dirname from "../utils.js";
+// const rutaProducto = path.join(__dirname, 'data', 'productos.json');
+import { isValidObjectId } from 'mongoose';
 import { Router } from 'express';
-import ProductManager from '../dao/ProductManager.js';
-export const router = Router();
-import path from 'path';
-import __dirname from "../utils.js";
-const rutaProducto = path.join(__dirname, 'data', 'productos.json');
-const productManager = new ProductManager(rutaProducto);
 import { io } from "../app.js";
+import ProductManager from '../dao/ProductManagerMONGO.js';
+const productManager = new ProductManager();
+export const router = Router();
 
 
 router.get("/", async (req, res) => {
+    let products
     try {
         res.setHeader('Content-Type', 'application/json');
-        const products = await productManager.getProducts();
+        products = await productManager.getProducts();
         let limit = req.query.limit;
         if (limit === undefined) {
             res.status(200).json(products);
@@ -31,13 +33,14 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:pid", async (req, res) => {
+    let id = req.params.pid;
+    if (!isValidObjectId(id)) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ error: `Ingrese un ID válido de MONGODB` })
+    }
     try {
         res.setHeader('Content-Type', 'application/json');
-        let id = Number(req.params.pid);
-        if (isNaN(id)) {
-            return res.status(400).json({ error: "Ingrese un ID numérico válido" });
-        }
-        const product = await productManager.getProductsById(id);
+        const product = await productManager.getProductsBy({ _id: id });
 
         if (product) {
             res.status(200).json(product);
@@ -62,70 +65,155 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ error: 'El precio y el stock deben ser números' })
         }
 
-        const products = await productManager.getProducts();
-        const codeRepeat = products.some(product => product.code === code);
+        // const products = await productManager.getProducts();
+        // const codeRepeat = products.some(product => product.code === code);
+
+        let codeRepeat
+        try {
+            codeRepeat = await productManager.getProductsBy({ code })
+        } catch (error) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(500).json(
+                {
+                    error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                    detalle: `${error.message}`
+                }
+            )
+        }
+
         if (codeRepeat) {
             return res.status(400).json({ error: `Error, el código ${code} se está repitiendo` });
         }
-        nuevoProducto = await productManager.addProduct({ title, description, price, thumbnail, code, stock, category })
+
+        try {
+            nuevoProducto = await productManager.addProduct({ title, description, price, thumbnail, code, stock, category })
+        } catch (error) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(500).json(
+                {
+                    error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                    detalle: `${error.message}`
+                }
+            )
+        }
     } catch (error) {
-        console.log(error);
         res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
     }
-    const productList= await productManager.getProducts();
+    const productList = await productManager.getProducts();
     io.emit("nuevoProducto", productList)
     res.setHeader('Content-Type', 'application/json');
     return res.status(201).json(nuevoProducto);
 })
 
 router.put("/:pid", async (req, res) => {
-    try {
-        res.setHeader('Content-Type', 'application/json');
-        let id = Number(req.params.pid);
-        let { title, description, price, thumbnail, stock, category } = req.body
-        const currentProduct = await productManager.getProductsById(id);
+    let id = req.params.pid;
 
-        if (!('stock' in req.body)) {
-            stock = currentProduct.stock;
+    try {
+
+        if (!isValidObjectId(id)) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(400).json({ error: `Ingrese un ID válido de MONGODB` })
         }
-        if (!('price' in req.body)) {
-            price = currentProduct.price;
+        
+        // const currentProduct = await productManager.getProductsBy(id);
+
+        // if (!('stock' in req.body)) {
+        //     stock = currentProduct.stock;
+        // }
+        // if (!('price' in req.body)) {
+        //     price = currentProduct.price;
+        // }
+        // if (!('category' in req.body)) {
+        //     category = currentProduct.category;
+        // }
+        // if (!('thumbnail' in req.body)) {
+        //     thumbnail = currentProduct.thumbnail;
+        // }
+        // if (!('title' in req.body)) {
+        //     title = currentProduct.title;
+        // }
+        // if (!('description' in req.body)) {
+        //     description = currentProduct.description;
+        // }
+
+        res.setHeader('Content-Type', 'application/json');
+        let stock, price, category, thumbnail, title, description
+        let updateData = req.body
+
+        if (updateData._id) {
+            delete updateData._id;
         }
-        if (!('category' in req.body)) {
-            category = currentProduct.category;
-        }
-        if (!('thumbnail' in req.body)) {
-            thumbnail = currentProduct.thumbnail;
-        }
-        if (!('title' in req.body)) {
-            title = currentProduct.title;
-        }
-        if (!('description' in req.body)) {
-            description = currentProduct.description;
+
+        if (updateData.code) {
+            let exist;
+
+            try {
+                exist = await productManager.getProductsBy({ code: updateData.code })
+                if (exist) {
+                    res.setHeader('Content-Type','application/json');
+                    return res.status(400).json({error:`Ya existe otro producto con codigo ${updateData.code}`})
+                }
+            } catch (error) {
+                res.setHeader('Content-Type', 'application/json');
+                return res.status(500).json(
+                    {
+                        error: `${error.message}`
+                    }
+                )
+            }
         }
 
         if ((stock !== undefined && isNaN(stock)) || (price !== undefined && isNaN(price))) {
             return res.status(400).json({ error: "Stock y precio deben ser números" });
         }
 
-        let productoModificado = await productManager.updateProduct(id, { title, description, price, thumbnail, stock, category });
-        return res.status(200).json(`El producto ${id} se ha modificado: ${productoModificado}`);
+        try {
+            let productoModificado = await productManager.updateProduct(id, updateData);
+            return res.status(200).json(`El producto ${id} se ha modificado: ${productoModificado}`);
+        } catch (error) {
+            res.status(300).json({ error: `Error al modificar el producto`, detalle: `${error.message}` });
+        }
     } catch (error) {
-        res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(500).json(
+            {
+                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                detalle: `${error.message}`
+            }
+        )
     }
 });
 
 router.delete("/:pid", async (req, res) => {
     let productoEliminado
+    let id = req.params.pid;
+
+    if (!isValidObjectId(id)) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ error: `Ingrese un ID válido de MONGODB` })
+    }
     try {
-        let id = req.params.pid;
         productoEliminado = await productManager.deleteProduct(id);
+        if(productoEliminado.deletedCount > 0){
+            res.setHeader('Content-Type','application/json');
+            return res.status(200).json({payload:`El producto con id ${id} fue eliminado`});
+        }else{
+            res.setHeader('Content-Type','application/json');
+            return res.status(400).json({error:`No existe ningun producto con el id ${id}`})
+        }
 
     } catch (error) {
-        res.status(500).json({ error: "Error interno del servidor" });
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(500).json(
+            {
+                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                detalle: `${error.message}`
+            }
+        )
+
     }
 
-    let products=productManager.getProducts();
+    let products = productManager.getProducts();
     io.emit("productoEliminado", products);
 
     res.setHeader('Content-Type', 'application/json');

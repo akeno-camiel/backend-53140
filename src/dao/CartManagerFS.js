@@ -1,5 +1,5 @@
 import fs from 'fs';
-import productManager from "./ProductManager.js";
+import productManager from "./ProductManagerFS.js";
 import __dirname from "../utils.js";
 import path from "path";
 const rutaProducto = path.join(__dirname, './data/productos.json');

@@ -1,17 +1,16 @@
 import { Router } from 'express';
-import CartManager from '../dao/CartManager.js';
-export const router = Router();
-import path from 'path';
-import __dirname from "../utils.js";
-const rutaCart = path.join(__dirname, './data/carritos.json');
-const cartManager = new CartManager(rutaCart);
+import mongoose, { isValidObjectId } from "mongoose";
+import CartManager from '../dao/CartManagerMONGO.js';
+import ProductManager from '../dao/ProductManagerMONGO.js';
 
+export const router = Router();
+const cartManager = new CartManager();
 
 router.get('/', async (req, res) => {
     try {
         res.setHeader('Content-Type', 'application/json')
         const cart = await cartManager.getCarts()
-            res.status(200).json(cart);
+        res.status(200).json(cart);
     } catch (error) {
         res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
     }
@@ -20,11 +19,15 @@ router.get('/', async (req, res) => {
 router.get('/:cid', async (req, res) => {
     try {
         res.setHeader('Content-Type', 'application/json')
-        const cid = Number(req.params.cid)
-        const cart = await cartManager.getCartsProducts(cid)
-        if (isNaN(cid)) {
-            return res.status(400).json({ error: "Ingrese un ID numérico válido" });
+        const cid = req.params.cid
+
+        if (!isValidObjectId(cid)) {
+            return res.status(400).json({
+                error: `Ingrese un ID de MongoDB válido`,
+            });
         }
+
+        const cart = await cartManager.getCartsBy(cid)
 
         if (cart) {
             res.status(200).json(cart);
@@ -37,22 +40,30 @@ router.get('/:cid', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-    let newCart
     try {
         res.setHeader('Content-Type', 'application/json')
-        newCart = await cartManager.addCart();
-        res.status(200).json(newCart)
+        const newCart = await cartManager.createCart();
+        res.status(200).json(`Carrito creado: ${newCart}`)
     } catch (error) {
         res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
     }
 })
 
 router.post('/:cid/products/:pid', async (req, res) => {
+
+    res.setHeader('Content-Type', 'application/json')
+    const { cid, pid } = req.params;
+
+    if (!isValidObjectId(cid, pid)) {
+        return res.status(400).json({
+            error: `Ingrese un ID de MongoDB válido`,
+        });
+    }
+
     try {
-        res.setHeader('Content-Type', 'application/json')
-        const { cid, pid } = req.params;
-        const added = await cartManager.addProductToCart(Number(cid), Number(pid));
-        res.status(200).json({success: true, message: 'Producto agregado exitosamente', added})
+        await cartManager.addProductToCart(cid, pid);
+        let cartUpdated = await cartManager.getCartsBy(cid);
+        res.status(200).json({ success: true, message: 'Producto agregado exitosamente', cartUpdated })
     } catch (error) {
         res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
     }

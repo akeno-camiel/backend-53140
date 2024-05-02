@@ -1,10 +1,7 @@
-import { Router } from 'express';
-import ProductManager from '../dao/ProductManager.js';
-import path from 'path';
-import __dirname from "../utils.js";
 export const router = Router()
-const rutaArchivo = path.join(__dirname, 'data', 'productos.json');
-const productManager = new ProductManager(rutaArchivo);
+import { Router } from 'express';
+const productManager = new ProductManager();
+import ProductManager from '../dao/ProductManagerMONGO.js';
 
 router.get('/', async (req, res) => {
     let products
@@ -37,3 +34,7 @@ router.get('/realtimeproducts', async (req, res) => {
     res.setHeader('Content-Type', 'text/html')
     res.status(200).render('realTime', { products })
 })
+
+router.get("/chat", (req, res) => {
+    res.status(200).render("chat");
+});

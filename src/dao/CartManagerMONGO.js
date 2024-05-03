@@ -1,4 +1,3 @@
-import mongoose, { ObjectId } from 'mongoose';
 import ProductManager from "./ProductManagerMONGO.js";
 import { cartModelo } from './models/cartModelo.js';
 
@@ -44,7 +43,6 @@ async addProductToCart(cid, pid) {
             }
 
             const newProduct = {
-                _id: new mongoose.Types.ObjectId(pid),
                 id: pid,
                 quantity: 1
             };

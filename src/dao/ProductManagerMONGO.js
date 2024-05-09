@@ -7,6 +7,14 @@ export default class ProductManager {
         return await productsModelo.find().lean();
     }
 
+    async getProductsPaginate(filter, options) {
+        return await productsModelo.paginate(filter, options)
+    }
+
+    async getSortProducts(sort){
+        return await productsModelo.find().sort({[sort]:1}).lean()
+    }
+
     async addProduct(product) {
         return await productsModelo.create(product)
     }
@@ -21,6 +29,6 @@ export default class ProductManager {
     }
 
     async deleteProduct(id) {
-        return await productsModelo.deleteOne({_id:id})
+        return await productsModelo.deleteOne({ _id: id })
     };
 }

@@ -8,29 +8,7 @@ import ProductManager from '../dao/ProductManagerMONGO.js';
 const productManager = new ProductManager();
 export const router = Router();
 
-/* 
-router.get("/", async (req, res) => {
-    let products
-    try {
-        res.setHeader('Content-Type', 'application/json');
-        products = await productManager.getProducts();
-        let limit = req.query.limit;
-        if (limit === undefined) {
-            res.status(200).json(products);
-        } else {
-            limit = Number(limit);
-            if (isNaN(limit)) {
-                return res.status(400).json({ error: "Ingrese un ID numérico" });
-            }
-            if (limit && limit > 0) {
-                products = products.slice(0, limit);
-            }
-            res.status(200).json(products);
-        }
-    } catch (error) {
-        res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
-    }
-}); */
+
 router.get("/", async (req, res) => {
     try {
         const { page = 1, limit = 10, sort } = req.query;
@@ -278,6 +256,13 @@ router.delete("/:pid", async (req, res) => {
     if (!isValidObjectId(id)) {
         res.setHeader('Content-Type', 'application/json');
         return res.status(400).json({ error: `Ingrese un ID válido de MONGODB` })
+    }
+
+    const product = await productManager.getProductsBy({ _id: id });
+    if (product) {
+        res.status(200).json(product);
+    } else {
+        return res.status(404).json({ error: `No existe un producto con el ID: ${id}` });
     }
     try {
         productoEliminado = await productManager.deleteProduct(id);

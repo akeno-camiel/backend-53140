@@ -14,8 +14,6 @@ const comprar = async (pid) => {
 
     if (response.status === 200) {
         let datos = await response.json()
-        console.log(datos)
-        alert("Producto agregado...!!!")
     }
 }
 

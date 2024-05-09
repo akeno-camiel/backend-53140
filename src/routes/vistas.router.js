@@ -107,12 +107,15 @@ router.get("/products", async (req, res) => {
         const categories = await productsModelo.distinct("category");
 
         let requestedPage = parseInt(page);
-        if (isNaN(requestedPage) || requestedPage < 1) {
+        if (isNaN(requestedPage)){
+            return res.status(400).json({ error: "Page debe ser un número" })
+        }
+        if (requestedPage < 1) {
             requestedPage = 1;
         }
 
         if (requestedPage > products.totalPages) {
-            return res.render("error", {error: "/products"});
+            return res.status(400).json({ error: "Lo sentimos, el sitio aún no cuenta con tantas páginas" })
         }
 
         return res.render("products", {status: "success",

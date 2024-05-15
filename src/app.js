@@ -4,12 +4,14 @@ import __dirname from "./utils.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 
 import { router as vistasRouter } from './routes/vistas.router.js';
 import { router as cartRouter } from './routes/cartRouter.js';
 import { router as productRouter } from './routes/productRouter.js';
 import { messageModelo } from "./dao/models/messageModelo.js";
 import { productsModelo } from "./dao/models/productsModelo.js";
+import sessions from "express-session";
 
 
 const PORT = 8080;
@@ -22,6 +24,11 @@ app.set('views', path.join(__dirname, '/views'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '/public')));
+app.use(cookieParser("CoderCoder123"))
+app.use(sessions({
+    secret: "CoderCoder123",
+    resave: true, saveUninitialized: true
+}))
 
 app.use('/', vistasRouter);
 app.use('/api/product', productRouter);
@@ -37,7 +44,7 @@ const server = app.listen(PORT, () => {
 
 export const io = new Server(server);
 
-io.on("connection", (socket) => { 
+io.on("connection", (socket) => {
     console.log(`Se conecto el cliente ${socket.id}`)
 
     socket.on("id", async (userName) => {

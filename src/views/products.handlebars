@@ -1,5 +1,8 @@
 <h2>Productos</h2>
-<hr>
+<hr><br>{{>menu}}<br>
+{{#if user}}
+    <p><strong>Bienvenid@ {{user.first_name}}</strong></p>
+{{/if}}
 <h3>Categoría</h3>
 <ul name="" id="">
     <li><a href="/products">Todos</a></li>
@@ -19,10 +22,22 @@
 
 <ul id="prod">
     {{#each payload}}
-    <li>
-        {{title}} | {{category}} | <strong> ${{price}} </strong> | code: {{code}} | <button
-            onclick="comprar ('{{_id}}')">Añadir al carrito</button>
-    </li>
+    <div class="container">
+        <div class="row">
+            <div class="col mx-1">
+                <div class="card" style="width: 75vw;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{title}}</h5>
+                        <p class="card-text"><strong>{{category}}</strong></p>
+                        <img src="{{thumbnails.[0]}}" alt={{title}}>
+                        <p class="card-text">{{description}}</p>
+                        <p class="card-text"><strong>$ {{price}}</strong></p>
+                        <button onclick="comprar ('{{_id}}')">Añadir al carrito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     {{/each}}
 </ul>
 <br><br>

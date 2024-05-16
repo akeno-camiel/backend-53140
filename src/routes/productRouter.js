@@ -5,7 +5,6 @@ import { isValidObjectId } from 'mongoose';
 import { Router } from 'express';
 import { io } from "../app.js";
 import ProductManager from '../dao/ProductManagerMONGO.js';
-import { title } from 'process';
 const productManager = new ProductManager();
 export const router = Router();
 

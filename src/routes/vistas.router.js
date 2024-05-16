@@ -4,6 +4,7 @@ const productManager = new ProductManager();
 import ProductManager from '../dao/ProductManagerMONGO.js';
 import CartManager from '../dao/CartManagerMONGO.js';
 import { productsModelo } from '../dao/models/productsModelo.js';
+import { auth } from '../utils.js';
 const cartManager = new CartManager();
 
 router.get('/', async (req, res) => {
@@ -48,6 +49,8 @@ router.get("/products", async (req, res) => {
     if (!cart) {
         cart = await cartManager.create()
     }
+
+    let user = req.session.user;
 
     try {
         const { page = 1, limit = 10, sort } = req.query;
@@ -107,7 +110,7 @@ router.get("/products", async (req, res) => {
         const categories = await productsModelo.distinct("category");
 
         let requestedPage = parseInt(page);
-        if (isNaN(requestedPage)){
+        if (isNaN(requestedPage)) {
             return res.status(400).json({ error: "Page debe ser un número" })
         }
         if (requestedPage < 1) {
@@ -118,18 +121,21 @@ router.get("/products", async (req, res) => {
             return res.status(400).json({ error: "Lo sentimos, el sitio aún no cuenta con tantas páginas" })
         }
 
-        return res.render("products", {status: "success",
-        payload: products.docs,
-        totalPages: products.totalPages,
-        page: parseInt(page),
-        hasPrevPage: products.hasPrevPage,
-        hasNextPage: products.hasNextPage,
-        prevPage,
-        nextPage,
-        prevLink,
-        nextLink,
-        categories: categories,
-        cart});
+        return res.render("products", {
+            status: "success",
+            payload: products.docs,
+            totalPages: products.totalPages,
+            page: parseInt(page),
+            hasPrevPage: products.hasPrevPage,
+            hasNextPage: products.hasNextPage,
+            prevPage,
+            nextPage,
+            prevLink,
+            nextLink,
+            categories: categories,
+            cart,
+            user
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Error interno del servidor" });
@@ -149,3 +155,23 @@ router.get("/carts/:cid", async (req, res) => {
         return res.status(404).json({ error: `No existe un carrito con el ID: ${cid}` });
     }
 })
+
+router.get('/signin', (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    let {error}= req.query
+    res.status(200).render('signin', {error})
+})
+
+router.get('/login', (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    let {error}= req.query
+    res.status(200).render('login', {error})
+})
+
+router.get('/profile', auth, (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.status(200).render('profile', {
+        user: req.session.user
+    })
+})
+

@@ -9,8 +9,8 @@ import cookieParser from "cookie-parser";
 import { router as vistasRouter } from './routes/vistas.router.js';
 import { router as cartRouter } from './routes/cartRouter.js';
 import { router as productRouter } from './routes/productRouter.js';
+import {router as sessionsRouter} from './routes/sessionRouter.js'
 import { messageModelo } from "./dao/models/messageModelo.js";
-import { productsModelo } from "./dao/models/productsModelo.js";
 import sessions from "express-session";
 
 
@@ -33,6 +33,7 @@ app.use(sessions({
 app.use('/', vistasRouter);
 app.use('/api/product', productRouter);
 app.use('/api/carts', cartRouter);
+app.use('/api/sessions', sessionsRouter)
 
 let usuarios = [];
 

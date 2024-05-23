@@ -13,6 +13,6 @@ export default class UserManager {
     };
 
     async getByPopulate(filtro = {}) {
-        return await usuariosModelo.findOne(filtro).populate("carrito").lean()
+        return await userModel.findOne(filtro).populate("cart").lean()
     }
 }

@@ -52,9 +52,8 @@ router.get("/products", auth, async (req, res) => {
 
     let user = req.session.user;
     let cart = {
-        _id: req.session.user.cart._id
+        _id: req.session.user.cart
     }
-
 
     try {
         const { page = 1, limit = 10, sort } = req.query;

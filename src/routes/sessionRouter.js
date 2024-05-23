@@ -38,9 +38,10 @@ router.get('/github', passport.authenticate("github", {}), (req, res) => { })
 
 router.get('/callbackGitHub', passport.authenticate("github", { failureRedirect: "/api/sessions/error" }), (req, res) => {
     req.session.user = req.user
+    console.log(req.user)
 
     res.setHeader('Content-Type', 'application/json');
-    return res.status(200).json({ payload: req.user });
+    return res.status(200).json({ payload: "Login correcto", user: req.user });
 })
 
 router.post('/register', passport.authenticate("registro", { failureRedirect: "/api/sessions/error" }), async (req, res) => {
@@ -57,9 +58,7 @@ router.post('/register', passport.authenticate("registro", { failureRedirect: "/
 
 router.post('/login', passport.authenticate("login", { failureRedirect: "/api/sessions/error" }), async (req, res) => {
     let { web } = req.body;
-
     let user = { ...req.user }
-    delete user.password
     req.session.user = user
 
     if (web) {

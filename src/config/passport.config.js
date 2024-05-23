@@ -79,15 +79,16 @@ export const initPassport = () => {
             },
             async (tokenAcceso, tokenRefresh, profile, done) => {
                 try {
+                    console.log(profile)
                     let email = profile._json.email
                     if (!email) {
                         return done(null, false);
                     }
-                    let first_name = profile._json.first_name
-                    let password = profile._json.password
+                    let first_name = profile._json.name
                     let user = await userManager.getByPopulate({ email })
                     if (!user) {
-                        user = await userManager.createUser({ first_name, email, password })
+                        let newCart = await cartManager.createCart()
+                        user = await userManager.createUser({ first_name, email, profile, cart: newCart._id })
                     }
 
                     return done(null, user)

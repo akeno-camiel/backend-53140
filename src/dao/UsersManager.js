@@ -11,4 +11,8 @@ export default class UserManager {
     async getUsersBy(filtro = {}) {
         return await userModel.findOne(filtro).lean();
     };
+
+    async getByPopulate(filtro = {}) {
+        return await usuariosModelo.findOne(filtro).populate("carrito").lean()
+    }
 }

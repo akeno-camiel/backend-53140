@@ -44,13 +44,17 @@ router.get("/chat", (req, res) => {
 });
 
 
-router.get("/products", async (req, res) => {
-    let cart = await cartManager.getCartsBy()
-    if (!cart) {
-        cart = await cartManager.create()
-    }
+router.get("/products", auth, async (req, res) => {
+    // let cart = await cartManager.getCartsBy()
+    // if (!cart) {
+    //     cart = await cartManager.create()
+    // }
 
     let user = req.session.user;
+    let cart = {
+        _id: req.session.user.cart._id
+    }
+
 
     try {
         const { page = 1, limit = 10, sort } = req.query;
@@ -134,7 +138,8 @@ router.get("/products", async (req, res) => {
             nextLink,
             categories: categories,
             cart,
-            user
+            user,
+            login: req.session.user
         });
     } catch (error) {
         console.log(error);
@@ -156,22 +161,24 @@ router.get("/carts/:cid", async (req, res) => {
     }
 })
 
-router.get('/signin', (req, res) => {
+router.get('/register', (req, res) => {
     res.setHeader('Content-Type', 'text/html');
-    let {error}= req.query
-    res.status(200).render('signin', {error})
+    let { error } = req.query
+    res.status(200).render('register', { error })
 })
 
 router.get('/login', (req, res) => {
     res.setHeader('Content-Type', 'text/html');
-    let {error}= req.query
-    res.status(200).render('login', {error})
+    let { error, message } = req.query
+
+    res.status(200).render('login', { error, message, login: req.session.user })
 })
 
 router.get('/profile', auth, (req, res) => {
     res.setHeader('Content-Type', 'text/html');
     res.status(200).render('profile', {
-        user: req.session.user
+        user: req.session.user,
+        login: req.session.user
     })
 })
 

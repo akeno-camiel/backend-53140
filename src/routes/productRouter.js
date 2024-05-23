@@ -5,6 +5,7 @@ import { isValidObjectId } from 'mongoose';
 import { Router } from 'express';
 import { io } from "../app.js";
 import ProductManager from '../dao/ProductManagerMONGO.js';
+import { auth } from '../utils.js';
 const productManager = new ProductManager();
 export const router = Router();
 
@@ -118,7 +119,7 @@ router.get("/:pid", async (req, res) => {
     }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
     let nuevoProducto
     try {
         const { title, description, price, thumbnail, code, stock, category } = req.body;

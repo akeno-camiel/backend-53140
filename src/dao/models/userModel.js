@@ -7,10 +7,18 @@ const userSchema = new mongoose.Schema(
         last_name: String,
         email: { type: String, required: true, unique: true },
         age: Number,
-        password: { type: String, required: true },
+        password: { type: String, required: function () { return !this.githubId; } },
         rol: {
             type: String, default: "usuario"
+        },
+        githubId: String,
+        cart: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "cart"
         }
+    },
+    {
+        timestamps: true, strict: false
     }
 )
 

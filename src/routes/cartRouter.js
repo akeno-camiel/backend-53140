@@ -2,6 +2,7 @@ import { Router } from 'express';
 import mongoose, { isValidObjectId } from "mongoose";
 import CartManager from '../dao/CartManagerMONGO.js';
 import ProductManager from '../dao/ProductManagerMONGO.js';
+import { auth } from '../utils.js';
 
 export const router = Router();
 const cartManager = new CartManager();
@@ -50,7 +51,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.post('/:cid/products/:pid', async (req, res) => {
+router.post('/:cid/products/:pid', auth, async (req, res) => {
 
     res.setHeader('Content-Type', 'application/json')
     const { cid, pid } = req.params;

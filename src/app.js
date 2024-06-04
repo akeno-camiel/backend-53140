@@ -20,7 +20,6 @@ import { messageModelo } from "./dao/models/messageModelo.js";
 
 const PORT = 8080;
 const app = express();
-// const fileStore = FileStore(sessions);
 
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
@@ -34,11 +33,6 @@ app.use(sessions({
     secret: "CoderCoder123",
     resave: true,
     saveUninitialized: true,
-    // store: new fileStore({
-    //     path: path.join(__dirname, '/sessions'),
-    //     ttl: 60 * 60,
-    //     retries: 0
-    // })
     store: MongoStore.create({
         ttl: 3600,
         mongoUrl: 'mongodb+srv://akenocamiel:CoderCoder@cluster0.bqr5bqp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',

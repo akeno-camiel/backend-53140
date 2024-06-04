@@ -5,7 +5,8 @@ import { isValidObjectId } from 'mongoose';
 import { Router } from 'express';
 import { io } from "../app.js";
 import ProductManager from '../dao/ProductManagerMONGO.js';
-import { auth } from '../utils.js';
+import { auth } from '../middleware/auth.js';
+
 const productManager = new ProductManager();
 export const router = Router();
 

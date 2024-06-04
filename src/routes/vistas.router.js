@@ -4,7 +4,8 @@ const productManager = new ProductManager();
 import ProductManager from '../dao/ProductManagerMONGO.js';
 import CartManager from '../dao/CartManagerMONGO.js';
 import { productsModelo } from '../dao/models/productsModelo.js';
-import { auth } from '../utils.js';
+import { auth } from '../middleware/auth.js';
+
 const cartManager = new CartManager();
 
 router.get('/', async (req, res) => {

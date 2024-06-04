@@ -1,10 +1,8 @@
 import { Router } from 'express';
-import UserManager from '../dao/UsersManager.js';
-import { generaHash, validaPassword } from '../utils.js';
 import passport from 'passport';
 import { error } from 'console';
+import { passportCall } from '../middleware/auth.js';
 export const router = Router()
-const userManager = new UserManager();
 
 router.get('/logout', (req, res) => {
     req.session.destroy(error => {
@@ -43,6 +41,12 @@ router.get('/callbackGitHub', passport.authenticate("github", { failureRedirect:
     res.setHeader('Content-Type', 'application/json');
     return res.status(200).json({ payload: "Login correcto", user: req.user });
 })
+
+router.get("/current", passportCall("current"), (req, res) => {
+    console.log("req.user: ", req.user);
+    const user = req.user;
+    res.send({ status: "success", payload: user });
+});
 
 router.post('/register', passport.authenticate("registro", { failureRedirect: "/api/sessions/error" }), async (req, res) => {
     let web = req.body;

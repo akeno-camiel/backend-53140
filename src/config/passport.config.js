@@ -1,11 +1,22 @@
 import passport from "passport";
+import passportJWT from "passport-jwt";
 import local from "passport-local";
 import UserManager from "../dao/UsersManager.js";
-import { generaHash, validaPassword } from "../utils.js";
+import { generaHash, validaPassword, SECRET } from "../utils.js";
 import github from "passport-github2"
 import CartManager from "../dao/CartManagerMONGO.js";
 const cartManager = new CartManager();
 const userManager = new UserManager();
+
+const buscaToken = (req) => {
+    let token = null
+
+    if (req.cookies["codercookie"]) {
+        token = req.cookies["codercookie"]
+    }
+
+    return token
+}
 
 export const initPassport = () => {
     passport.use(
@@ -59,7 +70,7 @@ export const initPassport = () => {
                     if (!validaPassword(password, user.password)) {
                         return done(null, false)
                     }
-                    user= {...user}
+                    user = { ...user }
                     delete user.password
                     return done(null, user);
                 } catch (error) {
@@ -92,6 +103,23 @@ export const initPassport = () => {
                     }
 
                     return done(null, user)
+                } catch (error) {
+                    return done(error)
+                }
+            }
+        )
+    )
+
+    passport.use(
+        "current",
+        new passportJWT.Strategy(
+            {
+                secretOrKey: SECRET,
+                jwtFromRequest: new passportJWT.ExtractJwt.fromExtractors([buscaToken])
+            },
+            async (contenidoToken, done) => {
+                try {
+                    return done(null, contenidoToken)
                 } catch (error) {
                     return done(error)
                 }

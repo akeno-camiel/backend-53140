@@ -4,7 +4,8 @@ const productManager = new ProductManager();
 import ProductManager from '../dao/ProductManagerMONGO.js';
 import CartManager from '../dao/CartManagerMONGO.js';
 import { productsModelo } from '../dao/models/productsModelo.js';
-import { auth } from '../utils.js';
+import { auth, verifyJWT } from '../middleware/auth.js';
+
 const cartManager = new CartManager();
 
 router.get('/', async (req, res) => {
@@ -39,20 +40,20 @@ router.get('/realtimeproducts', async (req, res) => {
     res.status(200).render('realTime', { products })
 })
 
-router.get("/chat", (req, res) => {
+router.get("/chat", verifyJWT, auth(["usuario"]), (req, res) => {
     res.status(200).render("chat");
 });
 
 
-router.get("/products", auth, async (req, res) => {
+router.get("/products", verifyJWT, auth(["usuario"]), async (req, res) => {
     // let cart = await cartManager.getCartsBy()
     // if (!cart) {
     //     cart = await cartManager.create()
     // }
 
-    let user = req.session.user;
+    let user = req.user;
     let cart = {
-        _id: req.session.user.cart
+        _id: req.user.cart
     }
 
     try {
@@ -138,7 +139,7 @@ router.get("/products", auth, async (req, res) => {
             categories: categories,
             cart,
             user,
-            login: req.session.user
+            login: req.user
         });
     } catch (error) {
         console.log(error);
@@ -146,7 +147,7 @@ router.get("/products", auth, async (req, res) => {
     }
 });
 
-router.get("/carts/:cid", async (req, res) => {
+router.get("/carts/:cid", verifyJWT, async (req, res) => {
     res.setHeader('Content-Type', 'text/html');
 
     let cid = req.params.cid
@@ -170,14 +171,14 @@ router.get('/login', (req, res) => {
     res.setHeader('Content-Type', 'text/html');
     let { error, message } = req.query
 
-    res.status(200).render('login', { error, message, login: req.session.user })
+    res.status(200).render('login', { error, message, login: req.user })
 })
 
-router.get('/profile', auth, (req, res) => {
+router.get('/profile', verifyJWT, auth(["usuario", "admin"]), (req, res) => {
     res.setHeader('Content-Type', 'text/html');
     res.status(200).render('profile', {
-        user: req.session.user,
-        login: req.session.user
+        user: req.user,
+        login: req.user
     })
 })
 

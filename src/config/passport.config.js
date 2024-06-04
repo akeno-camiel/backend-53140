@@ -1,11 +1,22 @@
 import passport from "passport";
+import passportJWT from "passport-jwt";
 import local from "passport-local";
 import UserManager from "../dao/UsersManager.js";
-import { generaHash, validaPassword } from "../utils.js";
+import { SECRET, generaHash, validaPassword } from "../utils.js";
 import github from "passport-github2"
 import CartManager from "../dao/CartManagerMONGO.js";
 const cartManager = new CartManager();
 const userManager = new UserManager();
+
+const buscaToken = (req) => {
+    let token = null
+
+    if (req.cookies["codercookie"]) {
+        token = req.cookies["codercookie"]
+    }
+
+    return token
+}
 
 export const initPassport = () => {
     passport.use(
@@ -19,16 +30,12 @@ export const initPassport = () => {
                     let { first_name, last_name, age } = req.body;
 
                     if (!first_name || !last_name || !age) {
-                        // res.setHeader('Content-Type', 'application/json');
-                        // return res.status(400).json({ error: `Complete los campos requeridos` })
-                        return done(null, false);
+                        return done(null, false, { message: 'Complete los campos requeridos' });
                     }
 
                     let existEmail = await userManager.getUsersBy({ email: username })
                     if (existEmail) {
-                        // res.setHeader('Content-Type', 'application/json');
-                        // return res.status(400).json({ error: `El email indicado ya existe` })
-                        return done(null, false);
+                        return done(null, false, { message: 'El email indicado ya existe' });
                     }
 
                     password = generaHash(password)
@@ -53,13 +60,13 @@ export const initPassport = () => {
                 try {
                     let user = await userManager.getUsersBy({ email: username })
                     if (!user) {
-                        return done(null, false)
+                        return done(null, false, { message: 'Usuario incorrecto' })
                     }
 
                     if (!validaPassword(password, user.password)) {
-                        return done(null, false)
+                        return done(null, false, { message: 'Contraseña incorrecto' })
                     }
-                    user= {...user}
+                    user = { ...user }
                     delete user.password
                     return done(null, user);
                 } catch (error) {
@@ -92,6 +99,23 @@ export const initPassport = () => {
                     }
 
                     return done(null, user)
+                } catch (error) {
+                    return done(error)
+                }
+            }
+        )
+    )
+
+    passport.use(
+        "current",
+        new passportJWT.Strategy(
+            {
+                secretOrKey: SECRET,
+                jwtFromRequest: new passportJWT.ExtractJwt.fromExtractors([buscaToken])
+            },
+            async (contenidoToken, done) => {
+                try {
+                    return done(null, contenidoToken)
                 } catch (error) {
                     return done(error)
                 }

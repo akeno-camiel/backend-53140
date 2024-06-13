@@ -5,6 +5,7 @@ import UserManager from "../dao/UsersManager.js";
 import { SECRET, generaHash, validaPassword } from "../utils.js";
 import github from "passport-github2"
 import CartManager from "../dao/CartManagerMONGO.js";
+import { config } from "./config.js";
 const cartManager = new CartManager();
 const userManager = new UserManager();
 
@@ -80,9 +81,9 @@ export const initPassport = () => {
         "github",
         new github.Strategy(
             {
-                clientID: "Iv23liEMp0RXxPDkCn6K",
-                clientSecret: "7e2f2b2e30fa33ec3db49f2d39a18d620ed35876",
-                callbackURL: "http://localhost:8080/api/sessions/callbackGitHub"
+                clientID: config.CLIENT_ID_GITHUB,
+                clientSecret: config.CLIENT_SECRET_GITHUB,
+                callbackURL: `http://localhost:${config.PORT}/api/sessions/callbackGitHub`
             },
             async (tokenAcceso, tokenRefresh, profile, done) => {
                 try {
@@ -110,7 +111,7 @@ export const initPassport = () => {
         "current",
         new passportJWT.Strategy(
             {
-                secretOrKey: SECRET,
+                secretOrKey: config.SECRET,
                 jwtFromRequest: new passportJWT.ExtractJwt.fromExtractors([buscaToken])
             },
             async (contenidoToken, done) => {

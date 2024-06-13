@@ -1,15 +1,20 @@
 <h2>Productos</h2>
 <hr><br>{{>menu}}<br>
+
 {{#if user}}
-    <p><strong>Hola {{user.first_name}}</strong></p>
+<p><strong>Hola {{user.first_name}}</strong></p>
 {{/if}}
 <h3>Categoría</h3>
-<ul name="" id="">
-    <li><a href="/products">Todos</a></li>
-    {{#each categories}}
-    <li><a href="/products?category={{this}}">{{this}}</a></li>
-    {{/each}}
-</ul>
+
+<div>
+    <select id="categorySelect">
+        <option value="/products">Todos</option>
+        {{#each categories}}
+        <option style="text-transform: capitalize" value="/products?category={{this}}">{{this}}</option>
+        {{/each}}
+    </select>
+</div>
+
 <input type="text" value="{{cart._id}}" hidden id="cart">
 
 <div>
@@ -28,7 +33,7 @@
                 <div class="card" style="width: 75vw;">
                     <div class="card-body">
                         <h5 class="card-title">{{title}}</h5>
-                        <p class="card-text"><strong>{{category}}</strong></p>
+                        <p style="text-transform: capitalize" class="card-text"><strong>{{category}}</strong></p>
                         <img src="{{thumbnails.[0]}}" alt={{title}}>
                         <p class="card-text">{{description}}</p>
                         <p class="card-text"><strong>$ {{price}}</strong></p>
@@ -53,6 +58,5 @@
 {{/if}}
 <a href="/products?page={{totalPages}}">Última Pág.</a>
 <h3> Pagina {{page}} / {{totalPages}}</h3>
-<a href="/carts/{{cart._id}}">Ver carrito</a>
 
 <script src="/assets/js/products.js"></script>

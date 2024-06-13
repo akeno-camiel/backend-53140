@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializeSortSelect();
 });
 
@@ -29,3 +29,7 @@ function initializeSortSelect() {
         });
     }
 }
+
+document.getElementById('categorySelect').addEventListener('change', function () {
+    window.location.href = this.value;
+});

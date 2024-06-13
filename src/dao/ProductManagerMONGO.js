@@ -11,14 +11,13 @@ export default class ProductManager {
         return await productsModelo.paginate(filter, options)
     }
 
-    async getSortProducts(sort){
-        return await productsModelo.find().sort({[sort]:1}).lean()
+    async getSortProducts(sort) {
+        return await productsModelo.find().sort({ [sort]: 1 }).lean()
     }
 
     async addProduct(product) {
         return await productsModelo.create(product)
     }
-
 
     async getProductsBy(filtro) {
         return await productsModelo.findOne(filtro).lean()

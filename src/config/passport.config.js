@@ -1,10 +1,10 @@
 import passport from "passport";
 import passportJWT from "passport-jwt";
 import local from "passport-local";
-import UserManager from "../dao/UsersManager.js";
+import UserManager from "../dao/UsersDAO.js";
 import { SECRET, generaHash, validaPassword } from "../utils.js";
 import github from "passport-github2"
-import CartManager from "../dao/CartManagerMONGO.js";
+import CartManager from "../dao/CartDAO.js";
 import { config } from "./config.js";
 const cartManager = new CartManager();
 const userManager = new UserManager();

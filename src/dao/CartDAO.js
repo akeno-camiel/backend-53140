@@ -1,6 +1,5 @@
-import ProductManager from "./ProductManagerMONGO.js";
+import ProductManager from "./ProductDAO.js";
 import { cartModelo } from './models/cartModelo.js';
-import mongoose from "mongoose";
 
 export default class CartManager {
 

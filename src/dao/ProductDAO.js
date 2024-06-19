@@ -15,7 +15,7 @@ export default class ProductManager {
         return await productsModelo.find().sort({ [sort]: 1 }).lean()
     }
 
-    async addProduct(product) {
+    async createProduct(product) {
         return await productsModelo.create(product)
     }
 

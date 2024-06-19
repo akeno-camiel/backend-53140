@@ -1,4 +1,4 @@
-import ProductManager from "../dao/ProductManagerMONGO"
+import ProductManager from "../dao/ProductDAO.js"
 
 class ProductService {
     constructor(dao) {

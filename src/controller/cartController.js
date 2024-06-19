@@ -1,16 +1,12 @@
-import mongoose, { isValidObjectId } from "mongoose";
-import CartManager from '../dao/CartManagerMONGO.js';
-import ProductManager from '../dao/ProductManagerMONGO.js';
-
-
-const cartManager = new CartManager();
-const productManager = new ProductManager();
+import { isValidObjectId } from "mongoose";
+import { cartService } from "../services/cartService.js";
+import { productService } from "../services/productService.js";
 
 export class CartController {
     static getCarts = async (req, res) => {
         try {
             res.setHeader('Content-Type', 'application/json')
-            const cart = await cartManager.getCarts()
+            const cart = await cartService.getCarts()
 
             res.status(200).json(cart);
         } catch (error) {
@@ -29,7 +25,7 @@ export class CartController {
                 });
             }
 
-            const cart = await cartManager.getCartsBy({ _id: cid })
+            const cart = await cartService.getCartsBy({ _id: cid })
             if (cart) {
                 res.status(200).json(cart);
             } else {
@@ -43,7 +39,7 @@ export class CartController {
     static createCart = async (req, res) => {
         try {
             res.setHeader('Content-Type', 'application/json')
-            const newCart = await cartManager.createCart();
+            const newCart = await cartService.createCart();
             res.status(200).json(`Carrito creado: ${newCart}`)
         } catch (error) {
             res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
@@ -61,19 +57,19 @@ export class CartController {
             });
         }
 
-        let productExists = await productManager.getProductsBy({ _id: pid });
+        let productExists = await productService.getProductsBy({ _id: pid });
         if (!productExists) {
             res.setHeader('Content-Type', 'application/json');
             return res.status(400).json({ error: `No existe un producto con el ID: ${pid}` })
         }
 
-        let cartExists = await cartManager.getCartsBy({ _id: cid })
+        let cartExists = await cartService.getCartsBy({ _id: cid })
         if (!cartExists) {
             res.setHeader('Content-Type', 'application/json');
             return res.status(404).json({ error: `No existe un carrito con el ID: ${cid}` })
         }
         try {
-            let resultado = await cartManager.addProductToCart(cid, pid);
+            let resultado = await cartService.addProductToCart(cid, pid);
             res.status(200).json({ success: true, message: 'Producto agregado exitosamente', resultado })
         } catch (error) {
             res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
@@ -90,14 +86,14 @@ export class CartController {
             });
         }
 
-        let cartExists = await cartManager.getCartsBy({ _id: cid })
+        let cartExists = await cartService.getCartsBy({ _id: cid })
         if (!cartExists) {
             res.setHeader('Content-Type', 'application/json');
             return res.status(404).json({ error: `No existe un carrito con el ID: ${cid}` })
         }
 
         try {
-            const newCart = await cartManager.updateCart(cid, products);
+            const newCart = await cartService.updateCart(cid, products);
             return res.status(200).json(newCart);
         } catch (error) {
             res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
@@ -115,21 +111,21 @@ export class CartController {
             });
         }
 
-        let productExists = await productManager.getProductsBy({ _id: pid });
+        let productExists = await productService.getProductsBy({ _id: pid });
         if (!productExists) {
             res.setHeader('Content-Type', 'application/json');
             return res.status(400).json({ error: `No existe un producto con el ID: ${pid}` })
         }
 
 
-        let cartExists = await cartManager.getCartsBy({ _id: cid })
+        let cartExists = await cartService.getCartsBy({ _id: cid })
         if (!cartExists) {
             res.setHeader('Content-Type', 'application/json');
             return res.status(404).json({ error: `No existe un carrito con el ID: ${cid}` })
         }
 
         try {
-            const result = await cartManager.updateProductQ(cid, pid, quantity);
+            const result = await cartService.updateProductQ(cid, pid, quantity);
             return res.status(200).json(result);
         } catch (error) {
             res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` })
@@ -147,14 +143,14 @@ export class CartController {
             });
         }
 
-        let cartExists = await cartManager.getCartsBy({ _id: cid })
+        let cartExists = await cartService.getCartsBy({ _id: cid })
         if (!cartExists) {
             res.setHeader('Content-Type', 'application/json');
             return res.status(404).json({ error: `No existe un carrito con el ID: ${cid}` })
         }
 
         try {
-            let carritoEliminado = await cartManager.deleteAllProductsFromCart(cid)
+            let carritoEliminado = await cartService.deleteAllProductsFromCart(cid)
             if (carritoEliminado) {
                 res.status(200).json({ message: 'All products removed from cart', carritoEliminado });
             } else {
@@ -181,13 +177,13 @@ export class CartController {
             });
         }
 
-        let productExists = await ProductManager.getProductsBy({ _id: pid });
+        let productExists = await productService.getProductsBy({ _id: pid });
         if (!productExists) {
             res.setHeader('Content-Type', 'application/json');
             return res.status(400).json({ error: `No existe un producto con el ID: ${pid}` })
         }
 
-        let cartExists = await cartManager.getCartsBy({ _id: cid })
+        let cartExists = await cartService.getCartsBy({ _id: cid })
         if (!cartExists) {
             res.setHeader('Content-Type', 'application/json');
             return res.status(404).json({ error: `No existe un carrito con el ID: ${cid}` })
@@ -195,7 +191,7 @@ export class CartController {
 
 
         try {
-            const cart = await cartManager.deleteProductFromCart(cid, pid);
+            const cart = await cartService.deleteProductFromCart(cid, pid);
 
             if (cart) {
                 res.status(200).json({ message: 'Product removed from cart', cart });

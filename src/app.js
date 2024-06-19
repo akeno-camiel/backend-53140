@@ -15,6 +15,47 @@ import { router as vistasRouter } from './routes/vistas.router.js';
 import { router as productRouter } from './routes/productRouter.js';
 import { router as sessionsRouter } from './routes/sessionRouter.js';
 
+// import nodemailer from 'nodemailer';
+// const transporter = nodemailer.createTransport(
+//     {
+//         service: 'gmail',
+//         port: '587',
+//         auth: {
+//             user: 'akeno.camiel@gmail.com',
+//             pass: 'gkzftvorupgjdqpr'
+//         }
+//     }
+// )
+// transporter.sendMail(
+//     {
+//         from: 'akeno.camiel@gmail.com',
+//         to: 'akeno.camiel@gmail.com',
+//         subject: 'Prueba de mail',
+//         html:
+//             `
+//         <div>
+//         <h1>Hola!</h1>
+//         <img src="img1"/>
+//         <p>Esto es una prueba de mail</p>
+//         <br><br>
+//         <p>Atentamente, <strong> Akeno 
+//         <img src='img2'/>
+//         </strong></p>
+//         </div>
+//         `,
+//         attachments: [{
+//             filename: 'imagen.jpg',
+//             path: path.join(__dirname, '/public/assets/img/aniquiladores-bg.jpg'),
+//             cid: "img1"
+//         }, 
+//         {
+//             filename: 'logo.jpg',
+//             path: path.join(__dirname, '/public/assets/img/AniquiladorEs-carne.png'),
+//             cid: "img2"
+//         }]
+//     }
+// ).then(res => console.log(res))
+//     .catch(error => console.log(error))
 
 const PORT = config.PORT;
 const app = express();
@@ -73,7 +114,7 @@ io.on("connection", (socket) => {
 
 const connDB = async () => {
     try {
-        await mongoose.connect(config.MONGO_URL, {dbName: config.DB_NAME})
+        await mongoose.connect(config.MONGO_URL, { dbName: config.DB_NAME })
         console.log("Mongoose activo")
     } catch (error) {
         console.log("Error al conectar a DB", error.message)

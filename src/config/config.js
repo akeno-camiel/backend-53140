@@ -1,12 +1,18 @@
 import dotenv from "dotenv";
 import { Command, Option } from "commander"
 // import __dirname from "../utils.js"
-// import path from "path";
+import path from "path";
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// const devPath = path.join(__dirname, './src/.env.dev');
-// const prodPath = path.join(__dirname, './src/.env.prod');
 
-// console.log(devPath)
+const devPath = path.join(__dirname, '../.env.dev');
+const prodPath = path.join(__dirname, '../.env.prod');
+
+console.log(devPath)
+console.log(prodPath)
+
 
 let programa = new Command()
 
@@ -19,7 +25,8 @@ const mode = argumentos.mode
 
 dotenv.config(
     {
-        path: mode === "prod" ? "./src/.env.prod" : "./src/.env.dev",
+        // path: mode === "prod" ? "./src/.env.prod" : "./src/.env.dev",
+        path: mode === "prod" ? prodPath : devPath,
         override: true
     }
 )
@@ -32,6 +39,3 @@ export const config = {
     CLIENT_ID_GITHUB: process.env.CLIENT_ID_GITHUB,
     CLIENT_SECRET_GITHUB: process.env.CLIENT_SECRET_GITHUB
 }
-
-console.log("CLIENT_ID_GITHUB:", process.env.CLIENT_ID_GITHUB);
-console.log("CLIENT_SECRET_GITHUB:", process.env.CLIENT_SECRET_GITHUB);

@@ -1,9 +1,6 @@
 import { isValidObjectId } from "mongoose";
-import ProductManager from '../dao/ProductManagerMONGO.js';
 import { io } from "../app.js";
-
-const productManager = new ProductManager();
-
+import { productService } from "../services/productService.js";
 
 export class ProductController {
     static getProducts = async (req, res) => {
@@ -57,7 +54,7 @@ export class ProductController {
                 };
             };
 
-            const products = await productManager.getProductsPaginate(
+            const products = await productService.getProductsPaginate(
                 searchQuery,
                 options
             );
@@ -102,7 +99,7 @@ export class ProductController {
         }
         try {
             res.setHeader('Content-Type', 'application/json');
-            const product = await productManager.getProductsBy({ _id: id });
+            const product = await productService.getProductsBy({ _id: id });
 
             if (product) {
                 res.status(200).json(product);
@@ -127,13 +124,13 @@ export class ProductController {
                 return res.status(400).json({ error: 'El precio y el stock deben ser números' })
             }
 
-            const codeRepeat = await productManager.getProductsBy({ code })
+            const codeRepeat = await productService.getProductsBy({ code })
 
             if (codeRepeat) {
                 return res.status(400).json({ error: `Error, el código ${code} se está repitiendo` });
             }
             
-            nuevoProducto = await productManager.addProduct({ title, description, price, thumbnail, code, stock, category })
+            nuevoProducto = await productService.createProduct({ title, description, price, thumbnail, code, stock, category })
             io.emit("newProduct", title)
             res.setHeader('Content-Type', 'application/json');
             return res.status(201).json(nuevoProducto);
@@ -172,7 +169,7 @@ export class ProductController {
                 let exist;
 
                 try {
-                    exist = await productManager.getProductsBy({ code: updateData.code })
+                    exist = await productService.getProductsBy({ code: updateData.code })
                     if (exist) {
                         res.setHeader('Content-Type', 'application/json');
                         return res.status(400).json({ error: `Ya existe otro producto con codigo ${updateData.code}` })
@@ -192,7 +189,7 @@ export class ProductController {
             }
 
             try {
-                let productoModificado = await productManager.updateProduct(id, updateData);
+                let productoModificado = await productService.updateProduct(id, updateData);
                 return res.status(200).json(`El producto ${id} se ha modificado: ${productoModificado}`);
             } catch (error) {
                 res.status(300).json({ error: `Error al modificar el producto`, detalle: `${error.message}` });
@@ -215,14 +212,14 @@ export class ProductController {
             return res.status(400).json({ error: `Ingrese un ID válido de MONGODB` })
         }
 
-        const product = await productManager.getProductsBy({ _id: id });
+        const product = await productService.getProductsBy({ _id: id });
         if (!product) {
             return res.status(404).json({ error: `No existe un producto con el ID: ${id}` });
         }
         try {
-            const deletedProduct = await productManager.deleteProduct(id);
+            const deletedProduct = await productService.deleteProduct(id);
             if (deletedProduct.deletedCount > 0) {
-                let products = await productManager.getProducts();
+                let products = await productService.getProducts();
                 io.emit("deletedProduct", products);
                 return res.status(200).json({ payload: `El producto con id ${id} fue eliminado` });
             } else {

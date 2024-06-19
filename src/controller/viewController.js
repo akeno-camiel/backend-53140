@@ -1,16 +1,15 @@
-import ProductManager from "../dao/ProductManagerMONGO.js";
-import CartManager from '../dao/CartManagerMONGO.js';
 import { productsModelo } from '../dao/models/productsModelo.js';
+import { cartService } from "../services/cartService.js";
+import { productService } from "../services/productService.js";
 
-const productManager = new ProductManager();
-const cartManager = new CartManager();
+
 
 
 export class ViewController {
     static getProducts = async (req, res) => {
         let products
         try {
-            products = await productManager.getProducts()
+            products = await productService.getProducts()
         } catch {
             res.setHeader('Content-Type', 'application/json');
             return res.status(500).json(
@@ -26,7 +25,7 @@ export class ViewController {
     static getRealTimeProducts = async (req, res) => {
         let products
         try {
-            products = await productManager.getProducts();
+            products = await productService.getProducts();
         } catch (error) {
             console.log(error)
             res.setHeader('Content-Type', 'application/json');
@@ -107,7 +106,7 @@ export class ViewController {
                 };
             };
 
-            const products = await productManager.getProductsPaginate(
+            const products = await productService.getProductsPaginate(
                 searchQuery,
                 options
             );
@@ -153,7 +152,7 @@ export class ViewController {
 
         let cid = req.params.cid
 
-        let cart = await cartManager.getCartsBy({ _id: cid })
+        let cart = await cartService.getCartsBy({ _id: cid })
 
         if (cart) {
             res.status(200).render("cart", { cart });

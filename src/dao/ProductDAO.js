@@ -19,7 +19,7 @@ export default class ProductManager {
         return await productsModelo.create(product)
     }
 
-    async getProductsBy(filtro) {
+    async getProductsBy(filtro={}) {
         return await productsModelo.findOne(filtro).lean()
     };
 

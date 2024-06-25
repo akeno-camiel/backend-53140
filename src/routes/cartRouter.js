@@ -6,9 +6,11 @@ export const router = Router();
 
 router.get('/', CartController.getCarts)
 
-router.get('/:cid', CartController.getCartsById)
+router.get('/:cid/purchase', verifyJWT, auth(["usuario"]), CartController.purchase)
 
-router.get('/:cid/purchase', CartController.getCartsById)
+router.post("/:cid/purchase", verifyJWT, auth(["usuario"]), CartController.purchase)
+
+router.get('/:cid', CartController.getCartsById)
 
 router.post('/', CartController.createCart)
 

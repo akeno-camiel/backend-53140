@@ -1,6 +1,10 @@
 import { isValidObjectId } from "mongoose";
 import { cartService } from "../services/cartService.js";
 import { productService } from "../services/productService.js";
+import UserManager from "../dao/UsersDAO.js";
+import { ticketService } from "../services/ticketService.js";
+
+const userService = new UserManager()
 
 export class CartController {
     static getCarts = async (req, res) => {
@@ -202,4 +206,76 @@ export class CartController {
             res.status(500).json({ message: 'Error deleting product from cart', error });
         }
     }
+
+    static purchase = async (req, res) => {
+        const { cid } = req.params;
+
+        if (!isValidObjectId(cid)) {
+            return res.status(400).json({ error: "ID de carrito no válido" });
+        }
+
+        try {
+            const cart = await cartService.getCartsBy({ _id: cid });
+
+            if (!cart) {
+                return res.status(404).json({ error: `Carrito con ID ${cid} no encontrado` });
+            }
+
+            const productsInCart = cart.products;
+            let productosParaFacturar = [];
+            let productosRestantes = [];
+
+            for (let product of productsInCart) {
+                const { product: { _id: pid }, quantity } = product;
+
+                if (!isValidObjectId(pid)) {
+                    return res.status(400).json({ error: `ID de producto no válido: ${pid}` });
+                }
+
+                const productData = await productService.getProductsBy({ _id: pid });
+
+                if (!productData) {
+                    return res.status(404).json({ error: `Producto con ID ${pid} no encontrado` });
+                }
+
+                if (productData.stock < quantity) {
+                    productosRestantes.push(product);
+                } else {
+                    const newStock = productData.stock - quantity;
+                    await productService.updateProduct(pid, { stock: newStock });
+
+                    productosParaFacturar.push({
+                        product: productData,
+                        quantity
+                    });
+                }
+            }
+
+            const totalAmount = productosParaFacturar.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+            const ticket = await ticketService.createTicket({
+                code: `T-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+                purchase_datetime: new Date(),
+                purchaser: req.user.email,
+                products: productosParaFacturar.map(item => ({
+                    pid: item.product._id,
+                    title: item.product.title,
+                    price: item.product.price,
+                    quantity: item.quantity,
+                    subtotal: item.product.price * item.quantity
+                })),
+                amount: totalAmount
+            });
+
+            await cartService.updateCart(cid, productosRestantes);
+
+            return res.status(200).json({
+                message: "Compra realizada exitosamente",
+                ticket
+            });
+        } catch (error) {
+            return res.status(500).json({ error: "Error inesperado en el servidor", detalle: error.message });
+        }
+    };
+
+
 }

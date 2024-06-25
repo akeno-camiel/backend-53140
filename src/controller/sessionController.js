@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { SECRET } from '../utils.js'
+import { UsersDTO } from '../dto/UsersDTO.js'
 
 export class SessionController {
     static logout = (req, res) => {
@@ -8,7 +9,7 @@ export class SessionController {
         return res.status(200).json({ payload: "Cerraste la sesión con éxito" });
     }
 
-    static error = (req, res) => {
+    static error = (req, res, error) => {
         res.setHeader('Content-Type', 'application/json');
         return res.status(500).json(
             {
@@ -33,7 +34,8 @@ export class SessionController {
 
     static current = (req, res) => {
         res.setHeader("Content-Type", "application/json")
-        return res.status(200).json(req.user)
+        let userDTO = new UsersDTO(req.user)
+        return res.status(200).json(userDTO)
     }
 
     static register = async (req, res) => {
@@ -49,7 +51,7 @@ export class SessionController {
     static login = async (req, res) => {
         let { web } = req.body;
         let user = { ...req.user }
-        delete user.password
+        // delete user.password
         let token = jwt.sign(user, SECRET, { expiresIn: "1h" })
         res.cookie("codercookie", token, { httpOnly: true })
 

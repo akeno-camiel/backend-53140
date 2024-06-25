@@ -10,9 +10,6 @@ const __dirname = path.dirname(__filename);
 const devPath = path.join(__dirname, '../.env.dev');
 const prodPath = path.join(__dirname, '../.env.prod');
 
-console.log(devPath)
-console.log(prodPath)
-
 
 let programa = new Command()
 
@@ -25,7 +22,6 @@ const mode = argumentos.mode
 
 dotenv.config(
     {
-        // path: mode === "prod" ? "./src/.env.prod" : "./src/.env.dev",
         path: mode === "prod" ? prodPath : devPath,
         override: true
     }

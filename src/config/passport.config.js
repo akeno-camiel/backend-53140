@@ -87,7 +87,6 @@ export const initPassport = () => {
             },
             async (tokenAcceso, tokenRefresh, profile, done) => {
                 try {
-                    console.log(profile)
                     let email = profile._json.email
                     if (!email) {
                         return done(null, false);

@@ -3,13 +3,46 @@ import mongoose from "mongoose";
 const ticketsCollection = "tickets";
 const ticketSchema = new mongoose.Schema(
     {
-        code: String,
-        purchase_datetime: "timestamp",
-        amount: Number,
+        code: {
+            type: String,
+            required: true
+        },
+        purchase_datetime: {
+            type: Date,
+            default: Date.now
+        },
+        amount: {
+            type: Number,
+            required: true
+        },
         purchaser: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "users"
-        }        
+            type: String,
+            required: true
+        },
+        products: [
+            {
+                _id: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "products"
+                },
+                quantity: {
+                    type: Number,
+                    required: true
+                },
+                title: {
+                    type: String,
+                    required: true
+                },
+                price: {
+                    type: Number,
+                    required: true
+                },
+                subtotal: {
+                    type: Number,
+                    required: true
+                }
+            }
+        ]
     },
     {
         timestamps: true

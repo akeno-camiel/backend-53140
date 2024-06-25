@@ -11,7 +11,6 @@ export const verifyJWT = (req, res, next) => {
             return res.status(403).json("Token inválido");
         }
         req.user = user;
-        console.log(req.user)
 
     });
     next();

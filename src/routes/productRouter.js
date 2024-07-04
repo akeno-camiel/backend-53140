@@ -6,10 +6,12 @@ export const router = Router();
 
 router.get("/", ProductController.getProducts);
 
+router.get("/mockingproducts", ProductController.mock);
+
 router.get("/:pid", ProductController.getProductById);
 
-router.post("/", verifyJWT, auth(["admin"]), ProductController.createProduct)
+router.post("/", verifyJWT, auth(["admin"]), ProductController.createProduct);
 
 router.put("/:pid", verifyJWT, auth(["admin"]), ProductController.updateProduct);
 
-router.delete("/:pid", verifyJWT, auth(["admin"]), ProductController.deleteProduct)
+router.delete("/:pid", verifyJWT, auth(["admin"]), ProductController.deleteProduct);

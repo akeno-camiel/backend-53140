@@ -2,37 +2,36 @@ import UserManager from "../dao/UsersDAO.js";
 import { ticketService } from "../services/ticketService.js";
 import { productService } from "../services/productService.js";
 import { isValidObjectId } from "mongoose";
+import { CustomError } from "../utils/CustomError.js";
+import { TIPOS_ERROR } from "../utils/EErrors.js";
 
 const userService = new UserManager()
 
 export class TicketController {
-    static createTicket = async (req, res) => {
+    static createTicket = async (req, res, next) => {
         let { email, ticket } = req.body
 
         if (!email || !ticket) {
             res.setHeader('Content-Type', 'application/json');
-            return res.status(400).json({ error: `Complete los datos` })
+            CustomError.createError("Error", "Email y Ticket requerido", "Complete los datos", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
         }
 
         if (!Array.isArray(ticket)) {
             res.setHeader('Content-Type', 'application/json');
-            return res.status(400).json({ error: `El ticket tiene un formato inválido` })
+            CustomError.createError("Error", "Ticket no es array", "El ticket tiene un formato inválido", TIPOS_ERROR.TIPO_DE_DATOS)
         }
 
         try {
             const user = await userService.getUsersBy({ email })
             if (!user) {
-                return res.status(404).json({ message: "Usuario no encontrado" });
+                CustomError.createError("Error", "Usuario no encontrado", "Usuario no encontrado", TIPOS_ERROR.NOT_FOUND)
             }
 
             let total = 0
-            let error = false
-            let detalleError = []
 
             for (const t of ticket) {
                 if (!isValidObjectId(t.pid)) {
-                    error = true;
-                    detalleError.push(`El producto con id ${t.pid} no es un ID válido de MONGODB`);
+                    CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
                     continue;
                 }
                 let product = await productService.getProductsBy({ _id: t.pid });
@@ -42,14 +41,8 @@ export class TicketController {
                     t.subtotal = product.price * t.quantity;
                     total += t.subtotal;
                 } else {
-                    error = true;
-                    detalleError.push(`El producto con id ${t.pid} no existe`);
+                    CustomError.createError("Error", "El producto no existe", `No existe un producto con el ID: ${t.pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
                 }
-            }
-
-            if (error) {
-                res.setHeader('Content-Type', 'application/json');
-                return res.status(400).json({ errors: detalleError })
             }
 
             const code = `T-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -65,8 +58,7 @@ export class TicketController {
 
             res.status(201).json(newTicket);
         } catch (error) {
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(500).json({ message: "Error al crear el ticket", detalle: `${error.message}` })
+            return next(error)
         }
     }
 

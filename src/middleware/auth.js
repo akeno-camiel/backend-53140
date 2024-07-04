@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { SECRET } from "../utils.js"
+import { SECRET } from "../utils/utils.js"
 
 export const verifyJWT = (req, res, next) => {
     const token = req.cookies["codercookie"];

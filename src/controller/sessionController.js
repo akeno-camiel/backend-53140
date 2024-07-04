@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
-import { SECRET } from '../utils.js'
+import { SECRET } from '../utils/utils.js'
 import { UsersDTO } from '../dto/UsersDTO.js'
+import "express-async-errors"
 
 export class SessionController {
     static logout = (req, res) => {
@@ -9,14 +10,22 @@ export class SessionController {
         return res.status(200).json({ payload: "Cerraste la sesión con éxito" });
     }
 
+    // static error = (req, res, error) => {
+    //     res.setHeader('Content-Type', 'application/json');
+    //     return res.status(500).json(
+    //         {
+    //             error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+    //             detalle: `${error.message}`
+    //         }
+    //     )
+    // }
     static error = (req, res, error) => {
+        const errorMessage = error?.message || 'Error desconocido';
         res.setHeader('Content-Type', 'application/json');
-        return res.status(500).json(
-            {
-                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                detalle: `${error.message}`
-            }
-        )
+        return res.status(500).json({
+            error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+            detalle: errorMessage
+        });
     }
 
     static callbackGitHub = (req, res) => {
@@ -39,19 +48,31 @@ export class SessionController {
     }
 
     static register = async (req, res) => {
-        let web = req.body;
-        if (web) {
-            res.redirect("/login")
-        } else {
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(200).json({ payload: `Usuario creado exitosamente`, user: req.user });
+        try {
+            let web = req.body.web;
+    
+            // Imprime los datos del cuerpo de la solicitud para verificar que se están recibiendo correctamente
+            console.log('Datos de registro:', req.body);
+    
+            if (web) {
+                res.redirect("/login");
+            } else {
+                res.setHeader('Content-Type', 'application/json');
+                return res.status(200).json({ payload: `Usuario creado exitosamente`, user: req.user });
+            }
+        } catch (error) {
+            console.error('Error en el registro:', error); // Imprime el error en la consola
+            return res.status(500).json({
+                error: "Error inesperado en el servidor - Intente más tarde, o contacte a su administrador",
+                detalle: error.message || 'Error desconocido'
+            });
         }
     }
+    
 
     static login = async (req, res) => {
         let { web } = req.body;
         let user = { ...req.user }
-        // delete user.password
         let token = jwt.sign(user, SECRET, { expiresIn: "1h" })
         res.cookie("codercookie", token, { httpOnly: true })
 

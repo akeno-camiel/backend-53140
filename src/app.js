@@ -3,61 +3,21 @@ import path from "path";
 import express from "express";
 import mongoose from "mongoose";
 import passport from "passport";
-import __dirname from "./utils.js";
 import { Server } from "socket.io";
+import __dirname from "./utils/utils.js";
 import cookieParser from "cookie-parser";
 import { config } from "./config/config.js";
 import { engine } from "express-handlebars";
 import { initPassport } from "./config/passport.config.js";
+import { errorHandler } from './middleware/errorHandler.js';
 
 import { messageModelo } from "./dao/models/messageModelo.js";
 import { router as cartRouter } from './routes/cartRouter.js';
 import { router as vistasRouter } from './routes/vistas.router.js';
 import { router as productRouter } from './routes/productRouter.js';
 import { router as sessionsRouter } from './routes/sessionRouter.js';
-import { router as ticketRouter } from './routes/ticketRouter.js';
 
-// import nodemailer from 'nodemailer';
-// const transporter = nodemailer.createTransport(
-//     {
-//         service: 'gmail',
-//         port: '587',
-//         auth: {
-//             user: 'akeno.camiel@gmail.com',
-//             pass: 'gkzftvorupgjdqpr'
-//         }
-//     }
-// )
-// transporter.sendMail(
-//     {
-//         from: 'akeno.camiel@gmail.com',
-//         to: 'akeno.camiel@gmail.com',
-//         subject: 'Prueba de mail',
-//         html:
-//             `
-//         <div>
-//         <h1>Hola!</h1>
-//         <img src="img1"/>
-//         <p>Esto es una prueba de mail</p>
-//         <br><br>
-//         <p>Atentamente, <strong> Akeno 
-//         <img src='img2'/>
-//         </strong></p>
-//         </div>
-//         `,
-//         attachments: [{
-//             filename: 'imagen.jpg',
-//             path: path.join(__dirname, '/public/assets/img/aniquiladores-bg.jpg'),
-//             cid: "img1"
-//         }, 
-//         {
-//             filename: 'logo.jpg',
-//             path: path.join(__dirname, '/public/assets/img/AniquiladorEs-carne.png'),
-//             cid: "img2"
-//         }]
-//     }
-// ).then(res => console.log(res))
-//     .catch(error => console.log(error))
+
 
 const PORT = config.PORT;
 const app = express();
@@ -71,7 +31,6 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.use(cookieParser())
 app.use(cors());
 
-
 initPassport()
 app.use(passport.initialize())
 
@@ -80,6 +39,7 @@ app.use('/api/product', productRouter);
 app.use('/api/carts', cartRouter);
 app.use('/api/sessions', sessionsRouter)
 
+app.use(errorHandler);
 
 let usuarios = [];
 

@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import { Command, Option } from "commander"
-// import __dirname from "../utils.js"
 import path from "path";
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
@@ -9,7 +8,6 @@ const __dirname = path.dirname(__filename);
 
 const devPath = path.join(__dirname, '../.env.dev');
 const prodPath = path.join(__dirname, '../.env.prod');
-
 
 let programa = new Command()
 

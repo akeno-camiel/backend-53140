@@ -13,6 +13,6 @@ router.get('/callbackGitHub', passport.authenticate("github", { failureRedirect:
 
 router.get("/current", passport.authenticate("current", { failureRedirect: "/api/sessions/error", session: false }), SessionController.current)
 
-router.post('/register', passport.authenticate("registro", { failureRedirect: "/api/sessions/error" }), SessionController.register)
+router.post('/register', passport.authenticate("registro", { failureRedirect: "/api/sessions/error", session: false }), SessionController.register)
 
 router.post('/login', passport.authenticate("login", { failureRedirect: "/api/sessions/error", session: false }), SessionController.login)

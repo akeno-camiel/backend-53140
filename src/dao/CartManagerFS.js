@@ -1,11 +1,11 @@
 import fs from 'fs';
 import productManager from "./ProductManagerFS.js";
-import __dirname from "../utils.js";
+import __dirname from "../utils/utils.js";
 import path from "path";
 const rutaProducto = path.join(__dirname, './data/productos.json');
 
 export default class CartManager {
-    
+
     constructor(rutaCart) {
         this.path = rutaCart;
         this.init();

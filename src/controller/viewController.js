@@ -1,6 +1,8 @@
 import { productsModelo } from '../dao/models/productsModelo.js';
 import { cartService } from "../services/cartService.js";
 import { productService } from "../services/productService.js";
+import { CustomError } from '../utils/CustomError.js';
+import { TIPOS_ERROR } from '../utils/EErrors.js';
 
 
 
@@ -10,13 +12,9 @@ export class ViewController {
         let products
         try {
             products = await productService.getProducts()
-        } catch {
+        } catch (error) {
             res.setHeader('Content-Type', 'application/json');
-            return res.status(500).json(
-                {
-                    error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                }
-            )
+            return res.status(500).json({ error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`, })
         }
         res.setHeader('Content-Type', 'text/html')
         res.status(200).render('home', { products })
@@ -29,11 +27,7 @@ export class ViewController {
         } catch (error) {
             console.log(error)
             res.setHeader('Content-Type', 'application/json');
-            return res.status(500).json(
-                {
-                    error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                }
-            )
+            return res.status(500).json({ error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`, })
         }
         res.setHeader('Content-Type', 'text/html')
         res.status(200).render('realTime', { products })
@@ -49,7 +43,7 @@ export class ViewController {
         }
     }
 
-    static getProductsPaginate = async (req, res) => {
+    static getProductsPaginate = async (req, res, next) => {
 
         let user = req.user;
         let cart = {
@@ -115,14 +109,14 @@ export class ViewController {
 
             let requestedPage = parseInt(page);
             if (isNaN(requestedPage)) {
-                return res.status(400).json({ error: "Page debe ser un número" })
+                CustomError.createError("Error", "Page is NaN", "Page debe ser un número", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
             if (requestedPage < 1) {
                 requestedPage = 1;
             }
 
             if (requestedPage > products.totalPages) {
-                return res.status(400).json({ error: "Lo sentimos, el sitio aún no cuenta con tantas páginas" })
+                CustomError.createError("Error", "Cantidad de páginas inválidas", "Lo sentimos, el sitio aún no cuenta con tantas páginas", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
             return res.render("products", {
@@ -142,8 +136,7 @@ export class ViewController {
                 login: req.user
             });
         } catch (error) {
-            console.log(error);
-            res.status(500).json({ error: "Error interno del servidor" });
+            return next(error)
         }
     }
 
@@ -157,15 +150,19 @@ export class ViewController {
         if (cart) {
             res.status(200).render("cart", { cart });
         } else {
-            return res.status(404).json({ error: `No existe un carrito con el ID: ${cid}` });
+            CustomError.createError("Error", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
         }
     }
 
     static register = (req, res) => {
+        // Imprime cualquier parámetro de consulta si está presente
+        console.log('Parámetros de consulta para registro:', req.query);
+        
         res.setHeader('Content-Type', 'text/html');
-        let { error } = req.query
-        res.status(200).render('register', { error })
+        let { error } = req.query;
+        res.status(200).render('register', { error });
     }
+    
 
     static login = (req, res) => {
         res.setHeader('Content-Type', 'text/html');

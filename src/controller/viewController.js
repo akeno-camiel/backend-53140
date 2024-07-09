@@ -13,8 +13,7 @@ export class ViewController {
         try {
             products = await productService.getProducts()
         } catch (error) {
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(500).json({ error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`, })
+            CustomError.createError("getProducts --> ViewController", null, "Un error inesperado ocurrió al obtener los productos", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
         res.setHeader('Content-Type', 'text/html')
         res.status(200).render('home', { products })
@@ -25,9 +24,7 @@ export class ViewController {
         try {
             products = await productService.getProducts();
         } catch (error) {
-            console.log(error)
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(500).json({ error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`, })
+            CustomError.createError("getRealTimeProducts --> ViewController", null, "Un error inesperado ocurrió al obtener los productos en tiempo real", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
         res.setHeader('Content-Type', 'text/html')
         res.status(200).render('realTime', { products })
@@ -38,8 +35,7 @@ export class ViewController {
             res.setHeader("Content-Type", "text/html")
             res.status(200).render("chat")
         } catch (error) {
-            res.setHeader("Content-Type", "application/json")
-            res.status(500).json({ Error: "Error 500 - Error inesperado en el servidor" })
+            CustomError.createError("getChat --> ViewController", null, "Un error inesperado ocurrió al cargar el chat", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -109,14 +105,14 @@ export class ViewController {
 
             let requestedPage = parseInt(page);
             if (isNaN(requestedPage)) {
-                CustomError.createError("Error", "Page is NaN", "Page debe ser un número", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("getProductsPaginate --> ViewController", "Page is NaN", "Page debe ser un número", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
             if (requestedPage < 1) {
                 requestedPage = 1;
             }
 
             if (requestedPage > products.totalPages) {
-                CustomError.createError("Error", "Cantidad de páginas inválidas", "Lo sentimos, el sitio aún no cuenta con tantas páginas", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("getProductsPaginate --> ViewController", "Cantidad de páginas inválidas", "Lo sentimos, el sitio aún no cuenta con tantas páginas", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
             return res.render("products", {
@@ -140,41 +136,49 @@ export class ViewController {
         }
     }
 
-    static getCartById = async (req, res) => {
-        res.setHeader('Content-Type', 'text/html');
+    static getCartById = async (req, res, next) => {
+        try {
+            res.setHeader('Content-Type', 'text/html');
+            let cid = req.params.cid
+            let cart = await cartService.getCartsBy({ _id: cid })
 
-        let cid = req.params.cid
-
-        let cart = await cartService.getCartsBy({ _id: cid })
-
-        if (cart) {
-            res.status(200).render("cart", { cart });
-        } else {
-            CustomError.createError("Error", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            if (cart) {
+                res.status(200).render("cart", { cart });
+            } else {
+                CustomError.createError("getCartById --> ViewController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND)
+            }
+        } catch (error) {
+            return next(error)
         }
     }
 
     static register = (req, res) => {
-        // Imprime cualquier parámetro de consulta si está presente
-        console.log('Parámetros de consulta para registro:', req.query);
-        
-        res.setHeader('Content-Type', 'text/html');
-        let { error } = req.query;
-        res.status(200).render('register', { error });
+        try {
+            res.setHeader('Content-Type', 'text/html');
+            let { error } = req.query;
+            res.status(200).render('register', { error });
+        } catch (error) {
+            CustomError.createError("register --> ViewController", null, "Un error inesperado ocurrió al registrarse", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
+        }
     }
-    
+
 
     static login = (req, res) => {
-        res.setHeader('Content-Type', 'text/html');
-        let { error, message } = req.query
-        res.status(200).render('login', { error, message, login: req.user })
+        try {
+            res.setHeader('Content-Type', 'text/html');
+            let { error, message } = req.query
+            res.status(200).render('login', { error, message, login: req.user })
+        } catch (error) {
+            CustomError.createError("login --> ViewController", null, "Un error inesperado ocurrió al iniciar sesión", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
+        }
     }
 
     static getProfile = (req, res) => {
-        res.setHeader('Content-Type', 'text/html');
-        res.status(200).render('profile', {
-            user: req.user,
-            login: req.user
-        })
+        try {
+            res.setHeader('Content-Type', 'text/html');
+            res.status(200).render('profile', { user: req.user, login: req.user })
+        } catch (error) {
+            CustomError.createError("getProfile --> ViewController", null, "Un error inesperado ocurrió al cargar su perfil", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
+        }
     }
 }

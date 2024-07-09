@@ -24,12 +24,12 @@ export default class CartManager {
         return cart.products;
     };
 
-    async addProductToCart(cid, pid) {
+    async addProductToCart(cid, pid, next) {
         try {
             const cart = await cartModelo.findById(cid);
 
             if (!cart) {
-                return `Carrito con id ${cid} no encontrado`;
+                return CustomError("addProductToCart --> cartDAO", "Carrito no encontrado", `No se encontró un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND);
             }
 
             const existingProductIndex = cart.products.findIndex(product => product.product == pid);
@@ -41,8 +41,7 @@ export default class CartManager {
                 const product = await productManager.getProductsBy({ _id: pid });
 
                 if (!product || product === "Not found") {
-                    console.log(`Producto con id ${pid} no encontrado`);
-                    return `Producto con id ${pid} no encontrado`;
+                    return CustomError("addProductToCart --> cartDAO", "Producto no encontrado", `No se encontró un producto con el ID: ${pid}`, TIPOS_ERROR.NOT_FOUND);
                 }
 
                 const newProduct = {
@@ -59,8 +58,7 @@ export default class CartManager {
 
             return cart;
         } catch (error) {
-            console.log(`Error al añadir producto: ${error}`);
-            return `Error al añadir producto: ${error}`;
+            return next(error)
         }
     };
 
@@ -73,8 +71,7 @@ export default class CartManager {
             );
             return `Carrito ${JSON.stringify(cart, null, 5)}`
         } catch (error) {
-            console.error(error.message);
-            return ("Error al actualizar el carrito");
+            CustomError.createError("updateCart --> cartDAO", "Error al actualizar el carrito", "Error actualizar el carrito", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
     };
 
@@ -87,12 +84,11 @@ export default class CartManager {
             ).populate("products.product");
             return cart;
         } catch (error) {
-            console.error(error.message);
-            return ("Error al actualizar la cantidad del producto");
+            CustomError.createError("updateProductQ --> cartDAO", "Error al actualizar la cantidad de productos", "Error actualizar la cantidad de productos", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
     };
 
-    async deleteAllProductsFromCart(cid) {
+    async deleteAllProductsFromCart(cid, next) {
         try {
             const cart = await cartModelo.findByIdAndUpdate(
                 cid,
@@ -101,7 +97,7 @@ export default class CartManager {
             );
 
             if (!cart) {
-                return `Carrito con id ${cid} no encontrado`;
+                return CustomError("deleteAllProductsFromCart --> cartDAO", "Carrito no encontrado", `No se encontró un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND);
             }
 
             cart.products = [];
@@ -111,11 +107,11 @@ export default class CartManager {
 
             return cart;
         } catch (error) {
-            return `Error al eliminar los productos del carrito: ${error}`;
+            return next(error)
         }
     };
 
-    async deleteProductFromCart(cid, pid) {
+    async deleteProductFromCart(cid, pid, next) {
         try {
             const cart = await cartModelo.findByIdAndUpdate(
                 cid,
@@ -135,7 +131,7 @@ export default class CartManager {
 
             return cart;
         } catch (error) {
-            CustomError.createError("deleteProductFromCart --> cartDAO", "Error al eliminar producto del carrito", error.message, TIPOS_ERROR.INTERNAL_SERVER_ERROR);
+            return next(error)
         }
     };
 };

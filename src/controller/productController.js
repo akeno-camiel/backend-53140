@@ -94,9 +94,9 @@ export class ProductController {
     static getProductById = async (req, res, next) => {
         let id = req.params.pid;
         try {
-        if (!isValidObjectId(id)) {
-            CustomError.createError("getProductById --> productController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
-        }
+            if (!isValidObjectId(id)) {
+                CustomError.createError("getProductById --> productController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            }
             res.setHeader('Content-Type', 'application/json');
             const product = await productService.getProductsBy({ _id: id });
 
@@ -189,23 +189,23 @@ export class ProductController {
 
     static deleteProduct = async (req, res, next) => {
         try {
-        let id = req.params.pid;
+            let id = req.params.pid;
 
-        if (!isValidObjectId(id)) {
-            CustomError.createError("deleteProduct --> productController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
-        }
+            if (!isValidObjectId(id)) {
+                CustomError.createError("deleteProduct --> productController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            }
 
-        const product = await productService.getProductsBy({ _id: id });
-        if (!product) {
-            CustomError.createError("deleteProduct --> productController", "No se encuentra el producto", `No existe un producto con el ID: ${id}`, TIPOS_ERROR.NOT_FOUND)
-        }
+            const product = await productService.getProductsBy({ _id: id });
+            if (!product) {
+                CustomError.createError("deleteProduct --> productController", "No se encuentra el producto", `No existe un producto con el ID: ${id}`, TIPOS_ERROR.NOT_FOUND)
+            }
             const deletedProduct = await productService.deleteProduct(id);
             if (deletedProduct.deletedCount > 0) {
                 let products = await productService.getProducts();
                 io.emit("deletedProduct", products);
                 return res.status(200).json({ payload: `El producto con id ${id} fue eliminado` });
             } else {
-                CustomError.createError("deleteProduct --> productController", "No se encuentra el producto", `No existe ningun producto con el id ${id}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("deleteProduct --> productController", "No se encuentra el producto", `No existe ningun producto con el id ${id}`, TIPOS_ERROR.NOT_FOUND)
             }
 
         } catch (error) {
@@ -232,12 +232,7 @@ export class ProductController {
             }
             return res.status(200).json(products);
         } catch (error) {
-            return res.status(500).json(
-                {
-                    error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                    detalle: `${error.message}`
-                }
-            )
+            CustomError.createError("getProfile --> ViewController", null, "Un error inesperado ocurrió al cargar la página", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
     }
 }

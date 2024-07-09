@@ -60,13 +60,13 @@ export class CartController {
             let productExists = await productService.getProductsBy({ _id: pid });
             if (!productExists) {
                 res.setHeader('Content-Type', 'application/json');
-                CustomError.createError("addToCart --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("addToCart --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.NOT_FOUND)
             }
 
             let cartExists = await cartService.getCartsBy({ _id: cid })
             if (!cartExists) {
                 res.setHeader('Content-Type', 'application/json');
-                CustomError.createError("addToCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("addToCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND)
             }
             let resultado = await cartService.addProductToCart(cid, pid);
             res.status(200).json({ success: true, message: 'Producto agregado exitosamente', resultado })
@@ -110,14 +110,14 @@ export class CartController {
             let productExists = await productService.getProductsBy({ _id: pid });
             if (!productExists) {
                 res.setHeader('Content-Type', 'application/json');
-                CustomError.createError("updateQuantity --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
+                CustomError.createError("updateQuantity --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.NOT_FOUND);
             }
 
 
             let cartExists = await cartService.getCartsBy({ _id: cid })
             if (!cartExists) {
                 res.setHeader('Content-Type', 'application/json');
-                CustomError.createError("updateQuantity --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
+                CustomError.createError("updateQuantity --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND);
             }
 
             const result = await cartService.updateProductQ(cid, pid, quantity);
@@ -139,14 +139,14 @@ export class CartController {
             let cartExists = await cartService.getCartsBy({ _id: cid })
             if (!cartExists) {
                 res.setHeader('Content-Type', 'application/json');
-                CustomError.createError("clearCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
+                CustomError.createError("clearCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND);
             }
 
             let carritoEliminado = await cartService.deleteAllProductsFromCart(cid)
             if (carritoEliminado) {
                 res.status(200).json({ message: 'El carrito está vacio', carritoEliminado });
             } else {
-                CustomError.createError("clearCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("clearCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND)
             }
         } catch (error) {
             res.setHeader('Content-Type', 'application/json');
@@ -196,7 +196,7 @@ export class CartController {
             const cart = await cartService.getCartsBy({ _id: cid });
 
             if (!cart) {
-                CustomError.createError("purchase --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("purchase --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND)
             }
 
             const productsInCart = cart.products;
@@ -213,7 +213,7 @@ export class CartController {
                 const productData = await productService.getProductsBy({ _id: pid });
 
                 if (!productData) {
-                    CustomError.createError("purchase --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                    CustomError.createError("purchase --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.NOT_FOUND)
                 }
 
                 if (productData.stock < quantity) {

@@ -9,29 +9,29 @@ const userService = new UserManager()
 
 export class TicketController {
     static createTicket = async (req, res, next) => {
+        try {
         let { email, ticket } = req.body
 
         if (!email || !ticket) {
             res.setHeader('Content-Type', 'application/json');
-            CustomError.createError("Error", "Email y Ticket requerido", "Complete los datos", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            CustomError.createError("createTicket --> TicketController", "Email y Ticket requerido", "Complete los datos", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
         }
 
         if (!Array.isArray(ticket)) {
             res.setHeader('Content-Type', 'application/json');
-            CustomError.createError("Error", "Ticket no es array", "El ticket tiene un formato inválido", TIPOS_ERROR.TIPO_DE_DATOS)
+            CustomError.createError("createTicket --> TicketController", "Ticket no es array", "El ticket tiene un formato inválido", TIPOS_ERROR.TIPO_DE_DATOS)
         }
 
-        try {
             const user = await userService.getUsersBy({ email })
             if (!user) {
-                CustomError.createError("Error", "Usuario no encontrado", "Usuario no encontrado", TIPOS_ERROR.NOT_FOUND)
+                CustomError.createError("createTicket --> TicketController", "Usuario no encontrado", "Usuario no encontrado", TIPOS_ERROR.NOT_FOUND)
             }
 
             let total = 0
 
             for (const t of ticket) {
                 if (!isValidObjectId(t.pid)) {
-                    CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                    CustomError.createError("createTicket --> TicketController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
                     continue;
                 }
                 let product = await productService.getProductsBy({ _id: t.pid });
@@ -41,7 +41,7 @@ export class TicketController {
                     t.subtotal = product.price * t.quantity;
                     total += t.subtotal;
                 } else {
-                    CustomError.createError("Error", "El producto no existe", `No existe un producto con el ID: ${t.pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                    CustomError.createError("createTicket --> TicketController", "El producto no existe", `No existe un producto con el ID: ${t.pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
                 }
             }
 

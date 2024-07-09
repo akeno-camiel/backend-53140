@@ -1,3 +1,5 @@
+import { CustomError } from "../utils/CustomError.js";
+import { TIPOS_ERROR } from "../utils/EErrors.js";
 import ProductManager from "./ProductDAO.js";
 import { cartModelo } from './models/cartModelo.js';
 
@@ -118,19 +120,22 @@ export default class CartManager {
             const cart = await cartModelo.findByIdAndUpdate(
                 cid,
                 { $inc: { 'products.$[product].quantity': -1 } },
-                { new: true, arrayFilters: [{ 'product._id': pid }] }
+                { new: true, arrayFilters: [{ 'product.product': pid }] }
             );
 
             if (!cart) {
-                return `Cart with id ${cid} not found`;
+                return CustomError("deleteProductFromCart --> cartDAO", "Carrito no encontrado", `No se encontró un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND);
             }
 
-            console.log(`Product removed from cart: ${cart}`);
+            const updatedProduct = cart.products.find(p => p.product == pid);
+            if (updatedProduct.quantity <= 0) {
+                cart.products.pull({ product: pid });
+                await cart.save();
+            }
 
             return cart;
         } catch (error) {
-            console.log(`Error deleting product from cart: ${error}`);
-            return `Error deleting product from cart: ${error}`;
+            CustomError.createError("deleteProductFromCart --> cartDAO", "Error al eliminar producto del carrito", error.message, TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
     };
 };

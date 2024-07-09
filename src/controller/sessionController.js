@@ -51,9 +51,6 @@ export class SessionController {
         try {
             let web = req.body.web;
     
-            // Imprime los datos del cuerpo de la solicitud para verificar que se están recibiendo correctamente
-            console.log('Datos de registro:', req.body);
-    
             if (web) {
                 res.redirect("/login");
             } else {

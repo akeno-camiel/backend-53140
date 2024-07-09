@@ -69,7 +69,7 @@ export class ProductController {
             }
 
             if (requestedPage > products.totalPages) {
-                CustomError.createError("Error", "No existe la página", "La página solicitada está fuera de rango", TIPOS_ERROR.NOT_FOUND)
+                CustomError.createError("getProducts --> productController", "No existe la página", "La página solicitada está fuera de rango", TIPOS_ERROR.NOT_FOUND)
             }
 
             const response = {
@@ -93,17 +93,17 @@ export class ProductController {
 
     static getProductById = async (req, res, next) => {
         let id = req.params.pid;
-        if (!isValidObjectId(id)) {
-            CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
-        }
         try {
+        if (!isValidObjectId(id)) {
+            CustomError.createError("getProductById --> productController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+        }
             res.setHeader('Content-Type', 'application/json');
             const product = await productService.getProductsBy({ _id: id });
 
             if (product) {
                 res.status(200).json(product);
             } else {
-                CustomError.createError("Error", "ID incorrecto", `No existe un producto con el ID: ${id}`, TIPOS_ERROR.NOT_FOUND)
+                CustomError.createError("getProductById --> productController", "ID incorrecto", `No existe un producto con el ID: ${id}`, TIPOS_ERROR.NOT_FOUND)
             }
 
         } catch (error) {
@@ -117,17 +117,17 @@ export class ProductController {
             const { title, description, price, thumbnail, code, stock, category } = req.body;
 
             if (!title || !description || !price || !thumbnail || !code || !stock || !category) {
-                CustomError.createError("Error", "No se completaron los campos obligatorios", "Todos los campos son obligatorios", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("createProduct --> productController", "No se completaron los campos obligatorios", "Todos los campos son obligatorios", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
             if (typeof price !== 'number' || typeof stock !== 'number') {
-                CustomError.createError("Error", "Precio y stock NaN", "El precio y stock deben ser valores numéricos", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("createProduct --> productController", "Precio y stock NaN", "El precio y stock deben ser valores numéricos", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
             const codeRepeat = await productService.getProductsBy({ code })
 
             if (codeRepeat) {
-                CustomError.createError("Error", "Código repetido", `Error, el código ${code} se está repitiendo`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("createProduct --> productController", "Código repetido", `Error, el código ${code} se está repitiendo`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
             nuevoProducto = await productService.createProduct({ title, description, price, thumbnail, code, stock, category })
@@ -147,7 +147,7 @@ export class ProductController {
         try {
 
             if (!isValidObjectId(id)) {
-                CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("updateProduct --> productController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
             res.setHeader('Content-Type', 'application/json');
@@ -165,7 +165,7 @@ export class ProductController {
                     exist = await productService.getProductsBy({ code: updateData.code })
                     if (exist) {
                         res.setHeader('Content-Type', 'application/json');
-                        CustomError.createError("Error", "Código repetido", `Ya existe otro producto con codigo ${updateData.code}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                        CustomError.createError("updateProduct --> productController", "Código repetido", `Ya existe otro producto con codigo ${updateData.code}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
                     }
                 } catch (error) {
                     return next(error)
@@ -173,14 +173,14 @@ export class ProductController {
             }
 
             if ((stock !== undefined && isNaN(stock)) || (price !== undefined && isNaN(price))) {
-                CustomError.createError("Error", "Stock y/o precio NaN", "Stock y precio deben ser números", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("updateProduct --> productController", "Stock y/o precio NaN", "Stock y precio deben ser números", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
             try {
                 let productoModificado = await productService.updateProduct(id, updateData);
                 return res.status(200).json(`El producto ${id} se ha modificado: ${productoModificado}`);
             } catch (error) {
-                CustomError.createError("Error", "Error al modificar el producto", "Error al modificar el producto", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("updateProduct --> productController", "Error al modificar el producto", "Error al modificar el producto", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
         } catch (error) {
             return next(error)
@@ -188,24 +188,24 @@ export class ProductController {
     }
 
     static deleteProduct = async (req, res, next) => {
+        try {
         let id = req.params.pid;
 
         if (!isValidObjectId(id)) {
-            CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            CustomError.createError("deleteProduct --> productController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
         }
 
         const product = await productService.getProductsBy({ _id: id });
         if (!product) {
-            CustomError.createError("Error", "No se encuentra el producto", `No existe un producto con el ID: ${id}`, TIPOS_ERROR.NOT_FOUND)
+            CustomError.createError("deleteProduct --> productController", "No se encuentra el producto", `No existe un producto con el ID: ${id}`, TIPOS_ERROR.NOT_FOUND)
         }
-        try {
             const deletedProduct = await productService.deleteProduct(id);
             if (deletedProduct.deletedCount > 0) {
                 let products = await productService.getProducts();
                 io.emit("deletedProduct", products);
                 return res.status(200).json({ payload: `El producto con id ${id} fue eliminado` });
             } else {
-                CustomError.createError("Error", "No se encuentra el producto", `No existe ningun producto con el id ${id}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("deleteProduct --> productController", "No se encuentra el producto", `No existe ningun producto con el id ${id}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
         } catch (error) {

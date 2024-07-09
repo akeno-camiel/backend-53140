@@ -1,12 +1,10 @@
 import { isValidObjectId } from "mongoose";
 import { cartService } from "../services/cartService.js";
 import { productService } from "../services/productService.js";
-import UserManager from "../dao/UsersDAO.js";
 import { ticketService } from "../services/ticketService.js";
 import { CustomError } from "../utils/CustomError.js";
 import { TIPOS_ERROR } from "../utils/EErrors.js";
 
-const userService = new UserManager()
 
 export class CartController {
     static getCarts = async (req, res) => {
@@ -25,14 +23,14 @@ export class CartController {
             const cid = req.params.cid
 
             if (!isValidObjectId(cid)) {
-                CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("getCartsById --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
             const cart = await cartService.getCartsBy({ _id: cid })
             if (cart) {
                 res.status(200).json(cart);
             } else {
-                CustomError.createError("Error", "ID de carrito inválido", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND)
+                CustomError.createError("getCartsById --> cartController", "ID de carrito inválido", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND)
             }
         } catch (error) {
             return next(error)
@@ -54,22 +52,22 @@ export class CartController {
         res.setHeader('Content-Type', 'application/json')
         const { cid, pid } = req.params;
 
-        if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
-            CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
-        }
-
-        let productExists = await productService.getProductsBy({ _id: pid });
-        if (!productExists) {
-            res.setHeader('Content-Type', 'application/json');
-            CustomError.createError("Error", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
-        }
-
-        let cartExists = await cartService.getCartsBy({ _id: cid })
-        if (!cartExists) {
-            res.setHeader('Content-Type', 'application/json');
-            CustomError.createError("Error", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
-        }
         try {
+            if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
+                CustomError.createError("addToCart --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            }
+
+            let productExists = await productService.getProductsBy({ _id: pid });
+            if (!productExists) {
+                res.setHeader('Content-Type', 'application/json');
+                CustomError.createError("addToCart --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            }
+
+            let cartExists = await cartService.getCartsBy({ _id: cid })
+            if (!cartExists) {
+                res.setHeader('Content-Type', 'application/json');
+                CustomError.createError("addToCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            }
             let resultado = await cartService.addProductToCart(cid, pid);
             res.status(200).json({ success: true, message: 'Producto agregado exitosamente', resultado })
         } catch (error) {
@@ -78,20 +76,20 @@ export class CartController {
     }
 
     static updateCart = async (req, res, next) => {
+        try {
         res.setHeader('Content-Type', 'application/json');
         let cid = req.params.cid;
         let products = req.body;
         if (!isValidObjectId(cid)) {
-            CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
+            CustomError.createError("updateCart --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
         }
 
         let cartExists = await cartService.getCartsBy({ _id: cid });
         if (!cartExists) {
             res.setHeader('Content-Type', 'application/json');
-            CustomError.createError("Error", "Carrito inexistente", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND);
+            CustomError.createError("updateCart --> cartController", "Carrito inexistente", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND);
         }
 
-        try {
             const newCart = await cartService.updateCart(cid, products);
             return res.status(200).json(newCart);
         } catch (error) {
@@ -100,28 +98,28 @@ export class CartController {
     }
 
     static updateQuantity = async (req, res, next) => {
+        try {
         res.setHeader('Content-Type', 'application/json')
         const { cid, pid } = req.params;
         let { quantity } = req.body;
 
         if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
-            CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
+            CustomError.createError("updateQuantity --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
         }
 
         let productExists = await productService.getProductsBy({ _id: pid });
         if (!productExists) {
             res.setHeader('Content-Type', 'application/json');
-            CustomError.createError("Error", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
+            CustomError.createError("updateQuantity --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
         }
 
 
         let cartExists = await cartService.getCartsBy({ _id: cid })
         if (!cartExists) {
             res.setHeader('Content-Type', 'application/json');
-            CustomError.createError("Error", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
+            CustomError.createError("updateQuantity --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
         }
 
-        try {
             const result = await cartService.updateProductQ(cid, pid, quantity);
             return res.status(200).json(result);
         } catch (error) {
@@ -130,25 +128,25 @@ export class CartController {
     }
 
     static clearCart = async (req, res, next) => {
+        try {
         res.setHeader('Content-Type', 'application/json')
         const cid = req.params.cid
 
         if (!isValidObjectId(cid)) {
-            CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
+            CustomError.createError("clearCart --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
         }
 
         let cartExists = await cartService.getCartsBy({ _id: cid })
         if (!cartExists) {
             res.setHeader('Content-Type', 'application/json');
-            CustomError.createError("Error", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
+            CustomError.createError("clearCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
         }
 
-        try {
             let carritoEliminado = await cartService.deleteAllProductsFromCart(cid)
             if (carritoEliminado) {
                 res.status(200).json({ message: 'El carrito está vacio', carritoEliminado });
             } else {
-                CustomError.createError("Error", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("clearCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
         } catch (error) {
             res.setHeader('Content-Type', 'application/json');
@@ -157,33 +155,33 @@ export class CartController {
     }
 
     static deleteProductFromCart = async (req, res, next) => {
+        try {
         res.setHeader('Content-Type', 'application/json')
         const { cid, pid } = req.params;
 
         if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
-            CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            CustomError.createError("deleteProductFromCart --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
         }
 
         let productExists = await productService.getProductsBy({ _id: pid });
         if (!productExists) {
             res.setHeader('Content-Type', 'application/json');
-            CustomError.createError("Error", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            CustomError.createError("deleteProductFromCart --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
         }
 
         let cartExists = await cartService.getCartsBy({ _id: cid })
         if (!cartExists) {
             res.setHeader('Content-Type', 'application/json');
-            CustomError.createError("Error", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+            CustomError.createError("deleteProductFromCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
         }
 
 
-        try {
             const cart = await cartService.deleteProductFromCart(cid, pid);
 
             if (cart) {
                 res.status(200).json({ message: 'Producto eliminado del carrito', cart });
             } else {
-                CustomError.createError("Error", "El carrito o producto no existen", `No existe un carrito con el ID: ${cid}, o un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("deleteProductFromCart --> cartController", "El carrito o producto no existen", `No existe un carrito con el ID: ${cid}, o un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
         } catch (error) {
             return next(error)
@@ -191,17 +189,17 @@ export class CartController {
     }
 
     static purchase = async (req, res) => {
+        try {
         const { cid } = req.params;
 
         if (!isValidObjectId(cid)) {
-            CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
+            CustomError.createError("purchase --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
         }
 
-        try {
             const cart = await cartService.getCartsBy({ _id: cid });
 
             if (!cart) {
-                CustomError.createError("Error", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                CustomError.createError("purchase --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
             const productsInCart = cart.products;
@@ -212,13 +210,13 @@ export class CartController {
                 const { product: { _id: pid }, quantity } = product;
 
                 if (!isValidObjectId(pid)) {
-                    CustomError.createError("Error", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                    CustomError.createError("purchase --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
                 }
 
                 const productData = await productService.getProductsBy({ _id: pid });
 
                 if (!productData) {
-                    CustomError.createError("Error", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
+                    CustomError.createError("purchase --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
                 }
 
                 if (productData.stock < quantity) {

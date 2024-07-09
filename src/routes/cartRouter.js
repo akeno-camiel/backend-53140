@@ -14,9 +14,7 @@ router.get('/:cid', CartController.getCartsById)
 
 router.post('/', CartController.createCart)
 
-// router.post('/:cid/products/:pid', verifyJWT, auth(["usuario"]), CartController.addToCart)
-router.post('/:cid/products/:pid', CartController.addToCart)
-
+router.post('/:cid/products/:pid', verifyJWT, auth(["usuario"]), CartController.addToCart)
 
 router.put('/:cid', verifyJWT, auth(["usuario"]), CartController.updateCart)
 

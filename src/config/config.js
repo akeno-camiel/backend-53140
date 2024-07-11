@@ -31,5 +31,6 @@ export const config = {
     DB_NAME: process.env.DB_NAME,
     SECRET: process.env.SECRET,
     CLIENT_ID_GITHUB: process.env.CLIENT_ID_GITHUB,
-    CLIENT_SECRET_GITHUB: process.env.CLIENT_SECRET_GITHUB
+    CLIENT_SECRET_GITHUB: process.env.CLIENT_SECRET_GITHUB,
+    MODE: process.env.MODE
 }

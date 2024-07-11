@@ -1,3 +1,5 @@
+import { logger } from "../../../utils/Logger.js";
+
 document.addEventListener('DOMContentLoaded', function () {
     initializeSortSelect();
 });
@@ -6,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
 const comprar = async (pid) => {
     let inputCart = document.getElementById("cart")
     let cid = inputCart.value
-    console.log(`Producto con id ${pid}, Carrito ${cid}`)
+    logger.debug(`Producto con id ${pid}, Carrito ${cid}`)
 
     let response = await fetch(`/api/carts/${cid}/products/${pid}`, {
         method: "post"

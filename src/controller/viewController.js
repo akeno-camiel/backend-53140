@@ -1,6 +1,6 @@
 import { productsModelo } from '../dao/models/productsModelo.js';
-import { cartService } from "../services/cartService.js";
 import { productService } from "../services/productService.js";
+import { cartService } from "../services/cartService.js";
 import { CustomError } from '../utils/CustomError.js';
 import { TIPOS_ERROR } from '../utils/EErrors.js';
 
@@ -9,6 +9,8 @@ import { TIPOS_ERROR } from '../utils/EErrors.js';
 
 export class ViewController {
     static getProducts = async (req, res) => {
+
+        req.logger.info("Prueba log info")
         let products
         try {
             products = await productService.getProducts()

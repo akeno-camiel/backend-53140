@@ -1,13 +1,14 @@
 import { TIPOS_ERROR } from "../utils/EErrors.js"
+import { logger } from "../utils/Logger.js"
 
 export const errorHandler = (error, req, res, next) => {
 
-    console.log(`${error.description ? error.description : error.message}`)
+    logger.error(`${error.description ? error.description : error.message}`)
 
     switch (error.code) {
         case TIPOS_ERROR.AUTORIZACION || TIPOS_ERROR.AUTENTICACION:
             res.setHeader("Content-Type", "application/json")
-            return res.status(401).json({ error: "Credenciales incorrectas" }) //! REEMPLAZAR POR LOGGER LOS CONSOLE.LOG
+            return res.status(401).json({ error: "Credenciales incorrectas" })
 
         case TIPOS_ERROR.ARGUMENTOS_INVALIDOS:
             res.setHeader("Content-Type", "application/json")

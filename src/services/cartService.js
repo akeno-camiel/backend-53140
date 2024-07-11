@@ -4,8 +4,8 @@ class CartService {
     constructor(dao) {
         this.dao = dao;
     }
-    async getCart(id) {
-        return await this.dao.getCart(id);
+    async getCarts(id) {
+        return await this.dao.getCarts(id);
     }
     async createCart() {
         return await this.dao.createCart();

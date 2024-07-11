@@ -10,7 +10,7 @@ export class CartController {
     static getCarts = async (req, res) => {
         try {
             res.setHeader('Content-Type', 'application/json')
-            const cart = await cartService.getCart()
+            const cart = await cartService.getCarts()
             res.status(200).json(cart);
         } catch (error) {
             res.status(500).json({ error: `Error inesperado en el servidor`, detalle: `${error.message}` });
@@ -149,7 +149,6 @@ export class CartController {
                 CustomError.createError("clearCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND)
             }
         } catch (error) {
-            res.setHeader('Content-Type', 'application/json');
             return next(error)
         }
     }

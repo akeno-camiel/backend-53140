@@ -1,5 +1,6 @@
 import { CustomError } from "../utils/CustomError.js";
 import { TIPOS_ERROR } from "../utils/EErrors.js";
+import { logger } from "../utils/Logger.js";
 import ProductManager from "./ProductDAO.js";
 import { cartModelo } from './models/cartModelo.js';
 
@@ -50,11 +51,11 @@ export default class CartManager {
                 };
 
                 cart.products.push(newProduct);
-                console.log(`Nuevo producto agregado al carrito: ${newProduct}`);
+                logger.info(`Nuevo producto agregado al carrito: ${newProduct}`);
             }
 
             await cart.save();
-            console.log(`Carrito guardado correctamente: ${cart}`);
+            logger.info(`Carrito guardado correctamente: ${cart}`);
 
             return cart;
         } catch (error) {
@@ -103,7 +104,7 @@ export default class CartManager {
             cart.products = [];
 
             await cart.save();
-            console.log(`Productos eliminados correctamente: ${cart}`);
+            logger.info(`Productos eliminados correctamente: ${cart}`);
 
             return cart;
         } catch (error) {

@@ -78,3 +78,18 @@
 {"level":"error","message":"nodemailer is not defined","timestamp":"2024-07-26T02:12:15.985Z"}
 {"level":"error","message":"userService.getUsersById is not a function","timestamp":"2024-07-26T02:15:17.718Z"}
 {"level":"error","message":"Parameter \"filter\" to findOne() must be an object, got \"66a2af787588aee377f23034\" (type string)","timestamp":"2024-07-26T02:15:37.157Z"}
+{"level":"error","message":"Failed to lookup view \"forgotPassword\" in views directory \"C:\\Users\\jatib\\OneDrive\\Escritorio\\Coder\\backend-jwt\\src\\views\"","timestamp":"2024-07-26T02:23:32.160Z"}
+{"level":"error","message":"Failed to lookup view \"forgotPassword\" in views directory \"C:\\Users\\jatib\\OneDrive\\Escritorio\\Coder\\backend-jwt\\src\\views\"","timestamp":"2024-07-26T02:23:32.623Z"}
+{"level":"error","message":"Failed to lookup view \"forgotPassword\" in views directory \"C:\\Users\\jatib\\OneDrive\\Escritorio\\Coder\\backend-jwt\\src\\views\"","timestamp":"2024-07-26T02:23:32.641Z"}
+{"level":"error","message":"Failed to lookup view \"forgotPassword\" in views directory \"C:\\Users\\jatib\\OneDrive\\Escritorio\\Coder\\backend-jwt\\src\\views\"","timestamp":"2024-07-26T02:23:54.962Z"}
+{"level":"error","message":"Failed to lookup view \"forgotPassword\" in views directory \"C:\\Users\\jatib\\OneDrive\\Escritorio\\Coder\\backend-jwt\\src\\views\"","timestamp":"2024-07-26T02:23:54.979Z"}
+{"level":"error","message":"Failed to lookup view \"forgotPassword\" in views directory \"C:\\Users\\jatib\\OneDrive\\Escritorio\\Coder\\backend-jwt\\src\\views\"","timestamp":"2024-07-26T02:24:37.543Z"}
+{"level":"error","message":"Failed to lookup view \"forgotPassword\" in views directory \"C:\\Users\\jatib\\OneDrive\\Escritorio\\Coder\\backend-jwt\\src\\views\"","timestamp":"2024-07-26T02:24:37.568Z"}
+{"level":"error","message":"Failed to lookup view \"generateNewPassword\" in views directory \"C:\\Users\\jatib\\OneDrive\\Escritorio\\Coder\\backend-jwt\\src\\views\"","timestamp":"2024-07-26T02:27:45.946Z"}
+{"level":"error","message":"Failed to lookup view \"generateNewPassword\" in views directory \"C:\\Users\\jatib\\OneDrive\\Escritorio\\Coder\\backend-jwt\\src\\views\"","timestamp":"2024-07-26T02:27:45.974Z"}
+{"level":"error","message":"Token inválido o expirado","timestamp":"2024-07-26T02:28:21.862Z"}
+{"level":"error","message":"Token inválido o expirado","timestamp":"2024-07-26T02:30:43.288Z"}
+{"level":"error","message":"Token inválido o expirado","timestamp":"2024-07-26T02:33:14.260Z"}
+{"level":"error","message":"Token inválido o expirado","timestamp":"2024-07-26T02:35:44.900Z"}
+{"level":"error","message":"Failed to decode param '%3C%=%20token%20%%3E'","timestamp":"2024-07-26T02:36:12.485Z"}
+{"level":"error","message":"Token inválido o expirado","timestamp":"2024-07-26T02:37:06.817Z"}

@@ -3,6 +3,8 @@ import { productService } from "../services/productService.js";
 import { cartService } from "../services/cartService.js";
 import { CustomError } from '../utils/CustomError.js';
 import { TIPOS_ERROR } from '../utils/EErrors.js';
+import jwt from 'jsonwebtoken';
+import { SECRET } from '../utils/utils.js';
 
 
 
@@ -181,6 +183,42 @@ export class ViewController {
             res.status(200).render('profile', { user: req.user, login: req.user })
         } catch (error) {
             CustomError.createError("getProfile --> ViewController", null, "Un error inesperado ocurrió al cargar su perfil", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    static forgotPassword = (req, res) => {
+        try {
+            res.setHeader("Content-Type", "text/html")
+            res.status(200).render("forgotPassword")
+        } catch (error) {
+            CustomError.createError("forgotPassword --> ViewController", null, "Un error inesperado ocurrió al cargar su perfil", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    static generateNewPassword = (req, res) => {
+        let token = req.params.token
+        let decoded
+        console.log(`Token recibido en la ruta: ${token}`);
+        try {
+            decoded = jwt.verify(token, SECRET);
+            console.log('Token válido y aún en vigencia:', decoded);
+        } catch (err) {
+            if (err.name === 'TokenExpiredError') {
+                console.error('El token ha expirado.');
+            } else if (err.name === 'JsonWebTokenError') {
+                console.error('El token no es válido.');
+            } else {
+                console.error('Error al verificar el token:', err);
+            }
+            return res.status(400).render("login", { message: "El token ha expirado o es inválido, por favor intente de nuevo." });
+        }
+
+        if (decoded) {
+            res.setHeader("Content-Type", "text/html");
+            return res.status(200).render("generateNewPassword", { token: token });
+        } else {
+            res.setHeader("Content-Type", "text/html");
+            res.status(200).render("login", { message: "El token ha expirado o es incorrecto, por favor intente de nuevo." });
         }
     }
 }

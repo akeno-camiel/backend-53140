@@ -51,20 +51,26 @@ export class CartController {
 
         res.setHeader('Content-Type', 'application/json')
         const { cid, pid } = req.params;
+        const userId = req.user._id;
 
         try {
             if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
                 CustomError.createError("addToCart --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
-            let productExists = await productService.getProductsBy({ _id: pid });
-            if (!productExists) {
+            let product = await productService.getProductsBy({ _id: pid });
+            if (!product) {
                 res.setHeader('Content-Type', 'application/json');
                 CustomError.createError("addToCart --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.NOT_FOUND)
             }
 
-            let cartExists = await cartService.getCartsBy({ _id: cid })
-            if (!cartExists) {
+            if (product.owner == userId && req.user.rol == "premium") {
+                req.logger.info(`El usuario premium ${userId} intentó agregar su propio producto ${pid} al carrito ${cid}`);
+                CustomError.createError("addToCart --> cartController", "Sin autorización", `No puede agregar su propio producto al carrito`, TIPOS_ERROR.AUTORIZACION)
+            }
+
+            let cart = await cartService.getCartsBy({ _id: cid })
+            if (!cart) {
                 res.setHeader('Content-Type', 'application/json');
                 CustomError.createError("addToCart --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND)
             }

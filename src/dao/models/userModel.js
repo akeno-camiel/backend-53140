@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
         age: Number,
         password: String,
         rol: {
-            type: String, default: "usuario"
+            type: String, enum: ["usuario", "admin", "premium"], default: "usuario"
         },
         cart: {
             type: mongoose.Schema.Types.ObjectId,

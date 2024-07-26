@@ -4,6 +4,7 @@ import { productService } from "../services/productService.js";
 import { fakerES_MX as faker, ne } from "@faker-js/faker";
 import { CustomError } from "../utils/CustomError.js";
 import { TIPOS_ERROR } from "../utils/EErrors.js";
+import { userService } from "../services/userService.js";
 
 export class ProductController {
     static getProducts = async (req, res, next) => {
@@ -114,6 +115,8 @@ export class ProductController {
     static createProduct = async (req, res, next) => {
         let nuevoProducto
         try {
+            const userId = req.user._id;
+            const userRol = req.user.rol;
             const { title, description, price, thumbnail, code, stock, category } = req.body;
 
             if (!title || !description || !price || !thumbnail || !code || !stock || !category) {
@@ -129,6 +132,15 @@ export class ProductController {
             if (codeRepeat) {
                 CustomError.createError("createProduct --> productController", "Código repetido", `Error, el código ${code} se está repitiendo`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
+
+            if (!userId && userRol === "admin") {
+                const result = await productService.createProduct(productData);
+                res.status(201).send({ status: "Sucess: Producto agregado", payload: result });
+                return;
+            }
+
+            const user = await userService.getUserBy(userId);
+            if (user) productData.owner = user._id;
 
             nuevoProducto = await productService.createProduct({ title, description, price, thumbnail, code, stock, category })
             io.emit("newProduct", title)

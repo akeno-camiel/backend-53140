@@ -13,6 +13,7 @@ import { initPassport } from "./config/passport.config.js";
 import { errorHandler } from './middleware/errorHandler.js';
 
 import { messageModelo } from "./dao/models/messageModelo.js";
+import { router as userRouter } from './routes/userRouter.js';
 import { router as cartRouter } from './routes/cartRouter.js';
 import { router as loggerRouter } from './routes/loggerRouter.js';
 import { router as vistasRouter } from './routes/vistas.router.js';
@@ -40,6 +41,7 @@ app.use('/', vistasRouter);
 app.use('/api/product', productRouter);
 app.use('/api/carts', cartRouter);
 app.use('/api/sessions', sessionsRouter);
+app.use('/api/users', userRouter);
 app.use('/loggerTest', loggerRouter)
 
 app.use(errorHandler);

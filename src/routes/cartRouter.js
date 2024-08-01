@@ -8,9 +8,9 @@ router.get('/', CartController.getCarts)
 
 router.get('/:cid/purchase', verifyJWT, auth(["usuario", "premium"]), CartController.purchase)
 
-router.post("/:cid/purchase", verifyJWT, auth(["usuario", "premium"]), CartController.purchase)
-
 router.get('/:cid', CartController.getCartsById)
+
+router.post("/:cid/purchase", verifyJWT, auth(["usuario", "premium"]), CartController.purchase)
 
 router.post('/', CartController.createCart)
 

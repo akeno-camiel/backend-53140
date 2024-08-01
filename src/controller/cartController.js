@@ -190,7 +190,7 @@ export class CartController {
         }
     }
 
-    static purchase = async (req, res) => {
+    static purchase = async (req, res, next) => {
         try {
             const { cid } = req.params;
 

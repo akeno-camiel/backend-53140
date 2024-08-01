@@ -93,3 +93,14 @@
 {"level":"error","message":"Token inválido o expirado","timestamp":"2024-07-26T02:35:44.900Z"}
 {"level":"error","message":"Failed to decode param '%3C%=%20token%20%%3E'","timestamp":"2024-07-26T02:36:12.485Z"}
 {"level":"error","message":"Token inválido o expirado","timestamp":"2024-07-26T02:37:06.817Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-01T00:12:16.747Z"}
+{"level":"error","message":"next is not defined","timestamp":"2024-08-01T00:52:54.425Z"}
+{"level":"error","message":"Cannot read properties of undefined (reading 'email')","timestamp":"2024-08-01T00:53:08.389Z"}
+{"level":"error","message":"Unexpected token e in JSON at position 7","timestamp":"2024-08-01T00:56:40.857Z"}
+{"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-01T16:10:15.864Z"}
+{"level":"error","message":"[ Thu, 01 Aug 2024 17:03:21 GMT ] [ID inválido] Error en purchase --> cartController: Ingrese un ID válido de MONGODB","timestamp":"2024-08-01T17:03:21.980Z"}
+{"level":"error","message":"[ Thu, 01 Aug 2024 17:04:17 GMT ] [ID inválido] Error en purchase --> cartController: Ingrese un ID válido de MONGODB","timestamp":"2024-08-01T17:04:17.702Z"}
+{"level":"error","message":"[ Thu, 01 Aug 2024 17:05:33 GMT ] [ID inválido] Error en purchase --> cartController: Ingrese un ID válido de MONGODB","timestamp":"2024-08-01T17:05:33.895Z"}
+{"level":"error","message":"[ Thu, 01 Aug 2024 17:05:59 GMT ] [ID inválido] Error en purchase --> cartController: Ingrese un ID válido de MONGODB","timestamp":"2024-08-01T17:05:59.566Z"}
+{"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-01T20:48:56.040Z"}
+{"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-01T21:15:45.046Z"}

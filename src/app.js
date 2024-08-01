@@ -6,8 +6,10 @@ import passport from "passport";
 import { Server } from "socket.io";
 import __dirname from "./utils/utils.js";
 import cookieParser from "cookie-parser";
+import swaggerUi from 'swagger-ui-express';
 import { config } from "./config/config.js";
 import { engine } from "express-handlebars";
+import { specs } from './utils/SwaggerConfig.js';
 import { logger, middLogger } from './utils/Logger.js';
 import { initPassport } from "./config/passport.config.js";
 import { errorHandler } from './middleware/errorHandler.js';
@@ -23,6 +25,7 @@ import { router as sessionsRouter } from './routes/sessionRouter.js';
 
 const PORT = config.PORT;
 const app = express();
+
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, '/views'));
@@ -43,6 +46,7 @@ app.use('/api/carts', cartRouter);
 app.use('/api/sessions', sessionsRouter);
 app.use('/api/users', userRouter);
 app.use('/loggerTest', loggerRouter)
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(errorHandler);
 

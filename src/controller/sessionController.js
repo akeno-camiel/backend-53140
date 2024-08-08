@@ -50,7 +50,7 @@ export class SessionController {
     static register = async (req, res) => {
         try {
             let web = req.body.web;
-    
+
             if (web) {
                 res.redirect("/login");
             } else {
@@ -65,19 +65,26 @@ export class SessionController {
             });
         }
     }
-    
+
 
     static login = async (req, res) => {
-        let { web } = req.body;
-        let user = { ...req.user }
-        let token = jwt.sign(user, SECRET, { expiresIn: "1h" })
-        res.cookie("codercookie", token, { httpOnly: true })
+        try {
+            let { web } = req.body;
+            let user = { ...req.user }
+            let token = jwt.sign(user, SECRET, { expiresIn: "1h" })
+            res.cookie("codercookie", token, { httpOnly: true })
 
-        if (web) {
-            res.redirect("/products")
-        } else {
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(200).json({ payload: "Login correcto", user, token });
+            if (web) {
+                res.redirect("/products")
+            } else {
+                res.setHeader('Content-Type', 'application/json');
+                return res.status(200).json({ payload: "Login correcto", user, token });
+            }
+        } catch (error) {
+            res.status(500).json({
+                status: 'error',
+                message: 'Error interno del servidor.'
+            });
         }
     }
 }

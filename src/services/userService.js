@@ -28,5 +28,9 @@ class UserService {
     async getUserId(id) {
         return this.dao.getUsersById({ _id: id })
     }
+
+    async deleteUserByEmail(userEmail) {
+        return await this.dao.deleteUserByEmail(userEmail);
+    };
 }
 export const userService = new UserService(new UserManager())

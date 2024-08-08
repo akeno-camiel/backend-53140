@@ -96,3 +96,5 @@ const connDB = async () => {
 }
 
 connDB()
+
+export { app, server };

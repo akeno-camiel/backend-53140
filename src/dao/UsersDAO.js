@@ -32,4 +32,12 @@ export default class UserManager {
         return await userModel.findByIdAndUpdate(id, { rol: nuevoRol }, { runValidators: true, returnDocument: "after" })
     }
 
+    async deleteUserByEmail(userEmail) {
+        try {
+            return await userModel.deleteOne({ email: userEmail });
+        } catch (error) {
+            throw new Error("Error al eliminar usuario");
+        }
+    }
+
 }

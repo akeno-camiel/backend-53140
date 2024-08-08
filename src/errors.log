@@ -104,3 +104,16 @@
 {"level":"error","message":"[ Thu, 01 Aug 2024 17:05:59 GMT ] [ID inválido] Error en purchase --> cartController: Ingrese un ID válido de MONGODB","timestamp":"2024-08-01T17:05:59.566Z"}
 {"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-01T20:48:56.040Z"}
 {"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-01T21:15:45.046Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-08T00:08:27.917Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-08T00:09:49.856Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-08T00:11:40.357Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-08T00:11:42.377Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-08T00:12:07.151Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-08T00:12:08.508Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-08T00:12:34.149Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-08T00:17:29.646Z"}
+{"level":"error","message":"Client must be connected before running operations","timestamp":"2024-08-08T00:17:30.516Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-08T00:20:09.403Z"}
+{"level":"error","message":"Client must be connected before running operations","timestamp":"2024-08-08T00:49:18.615Z"}
+{"level":"error","message":"Client must be connected before running operations","timestamp":"2024-08-08T00:53:42.808Z"}
+{"level":"error","message":"Can't call `openUri()` on an active connection with different connection strings. Make sure you aren't calling `mongoose.connect()` multiple times. See: https://mongoosejs.com/docs/connections.html#multiple_connections","timestamp":"2024-08-08T16:13:06.321Z"}

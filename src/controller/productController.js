@@ -244,7 +244,7 @@ export class ProductController {
             }
             return res.status(200).json(products);
         } catch (error) {
-            CustomError.createError("getProfile --> ViewController", null, "Un error inesperado ocurrió al cargar la página", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
+            CustomError.createError("mock --> productController", null, "Un error inesperado ocurrió al cargar la página", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
     }
 }

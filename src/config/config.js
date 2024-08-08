@@ -28,6 +28,8 @@ dotenv.config(
 export const config = {
     PORT: process.env.PORT || 3000,
     MONGO_URL: process.env.MONGO_URL,
+    MONGO_TEST_URL: process.env.MONGO_TEST_URL,
+    DB_NAME_TEST: process.env.DB_NAME_TEST,
     DB_NAME: process.env.DB_NAME,
     SECRET: process.env.SECRET,
     CLIENT_ID_GITHUB: process.env.CLIENT_ID_GITHUB,

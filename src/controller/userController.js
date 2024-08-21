@@ -251,7 +251,7 @@ export class UserController {
                             };
                         }
                     } else {
-                        reference =` /public/assets/documents/${uid}/${file.filename}`;
+                        reference = ` /public/assets/documents/${uid}/${file.filename}`;
                         documentsToSave.push({
                             name: file.filename,
                             reference: reference,

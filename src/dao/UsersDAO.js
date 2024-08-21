@@ -20,6 +20,14 @@ export default class UserManager {
         return await userModel.findOne(id).lean();
     };
 
+    async getDocumentsByUserId(id) {
+        const user = await userModel.findOne({ _id: id }).lean();
+        if (!user) {
+            throw new Error("Usuario no encontrado");
+        }
+        return user.documents || [];
+    };
+
     async getByPopulate(filtro = {}) {
         return await userModel.findOne(filtro).populate("cart").lean()
     }
@@ -32,7 +40,7 @@ export default class UserManager {
         return await userModel.findByIdAndUpdate(id, { rol: nuevoRol }, { runValidators: true, returnDocument: "after" })
     }
 
-    async updateUser (uid, update) {
+    async updateUser(uid, update) {
         try {
             const user = await userModel.findByIdAndUpdate(uid, update, { new: true });
             if (!user) {

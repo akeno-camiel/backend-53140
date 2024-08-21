@@ -17,6 +17,10 @@ class UserService {
         return await this.dao.getUsersBy(filtro);
     }
 
+    async getDocumentsByUserId(id) {
+        return await this.dao.getDocumentsByUserId(id)
+    }
+
     async updatePassword(id, hashedPassword) {
         return this.dao.update(id, hashedPassword)
     }

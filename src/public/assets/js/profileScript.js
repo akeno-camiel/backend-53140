@@ -58,114 +58,138 @@ function uploadFile(type, inputId, docType) {
     return;
   }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("docType", docType);
-    let url = `/api/users/${userId}/documents?type=${type}`;
-    if (docType) {
-      url += `&document_type=${docType}`;
-    }
-
-    fetch(url, {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        Toastify({
-          text: "Archivo subido exitosamente",
-          style: {
-            background: "#28a745",
-          },
-        }).showToast();
-        socket.emit("documentUploadSuccess", { userId: userId, documentType: docType });
-        if (docType === "avatar") {
-          updateProfilePic();
-        }
-        const fileInput = document.getElementById(inputId);
-        if (fileInput) fileInput.value = "";
-        if (inputId === "profilePictureInput") {
-          cancelImageSelection();
-        }
-      })
-      .catch((error) => {
-        console.error("Error al subir el archivo:", error);
-        Toastify({
-          text: "Error al subir el archivo",
-          style: {
-            background: "linear-gradient(to right, #ff5f6d, #ffc371)",
-          },
-        }).showToast();
-      });
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("docType", docType);
+  let url = `/api/users/${userId}/documents?type=${type}`;
+  if (docType) {
+    url += `&document_type=${docType}`;
   }
 
+  fetch(url, {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Respuesta de la subida de archivo:", data);
+      Toastify({
+        text: "Archivo subido exitosamente",
+        style: {
+          background: "#28a745",
+        },
+      }).showToast();
 
-  // Funciones de carga de documentos
-  function updateDocumentStatus(documents) {
-    if (!Array.isArray(documents)) {
-      console.error("Expected an array for documents, but got:", documents);
+
+      socket.emit("documentUploadSuccess", { userId: userId, documentType: docType });
+      if (docType === "avatar") {
+        updateProfilePic();
+      }
+      
+      const fileInput = document.getElementById(inputId);
+      if (fileInput) fileInput.value = "";
+      if (inputId === "profilePictureInput") {
+        cancelImageSelection();
+      }
+    })
+    .catch((error) => {
+      console.error("Error al subir el archivo:", error);
+      Toastify({
+        text: "Error al subir el archivo",
+        style: {
+          background: "linear-gradient(to right, #ff5f6d, #ffc371)",
+        },
+      }).showToast();
+    });
+}
+
+
+// Funciones de carga de documentos
+function updateDocumentStatus(documents) {
+  console.log("Documentos recibidos:", documents); // Log para ver qué documentos se están recibiendo
+
+  if (!Array.isArray(documents)) {
+    console.error("Expected an array for documents, but got:", documents);
+    documents.forEach(doc => {
+      const statusElement = document.getElementById(`status-${doc.docType}`);
+      if (statusElement) {
+        statusElement.innerText = "Recibido";
+        statusElement.classList.remove("bg-danger");
+        statusElement.classList.add("bg-success");
+      }
+    });
+    return;
+  }
+
+  function updateStatus(docType, statusElementId) {
+    const statusElement = document.getElementById(statusElementId);
+    console.log("Actualizando estado para:", docType, statusElement);
+
+    if (!statusElement) {
+      console.error("Elemento no encontrado para:", statusElementId);
       return;
     }
 
-    function updateStatus(docType, statusElementId) {
-      const statusElement = document.getElementById(statusElementId);
-      const found = documents.some((d) => d.docType === docType);
+    const found = documents.some((d) => d.docType === docType);
+    console.log("Documento encontrado:", found);
 
-      if (statusElement) {
-        if (found) {
-          statusElement.textContent = "Cargado";
-          statusElement.classList.remove("bg-danger");
-          statusElement.classList.add("bg-success");
-        } else {
-          statusElement.textContent = "Faltante";
-          statusElement.classList.remove("bg-success");
-          statusElement.classList.add("bg-danger");
-        }
-      }
+    if (found) {
+      statusElement.textContent = "Cargado";
+      statusElement.classList.remove("bg-danger");
+      statusElement.classList.add("bg-success");
+    } else {
+      statusElement.textContent = "Faltante";
+      statusElement.classList.remove("bg-success");
+      statusElement.classList.add("bg-danger");
     }
-
-    updateStatus("ID", "status-ID");
-    updateStatus("adress", "status-adress");
-    updateStatus("statement", "status-statement");
   }
 
-  socket.on("documentsUpdated", ({ userId, documents }) => {
-    updateDocumentStatus(documents);
-  });
 
-  // Funciones de actualización de vista al cambio de rol e imagen de perfil
-  async function updateUserRole() {
-    const userRoleElement = document.getElementById("userRole");
-    const userRoleElement2 = document.getElementById("user-role");
-    const userIdElement = document.getElementById("ID");
-    const userId = userIdElement ? userIdElement.textContent.trim() : null;
-    const toggleButton = document.getElementById("btn-premium");
 
-    if (userRoleElement && userId) {
-      try {
-        const response = await fetch("/api/users");
-        const data = await response.json();
-        const users = data.users;
-        const user = users.find((user) => user._id === userId);
+updateStatus("ID", "status-ID");
+updateStatus("adress", "status-adress");
+updateStatus("statement", "status-statement");
+}
 
-        if (user) {
-          userRoleElement.textContent = user.rol;
-          userRoleElement2.textContent = user.rol;
-          if (toggleButton) {
-            if (user.rol === "usuario") {
-              toggleButton.innerHTML = '<i class="fas fa-star"></i> Actualizar a Premium';
-            } else if (user.role === "premium") {
-              toggleButton.innerHTML = '<i class="fas fa-star"></i> Actualizar a Usuario';
-            }
+socket.on("documentsUpdated", ({ userId, documents }) => {
+  console.log("Documentos recibidos en el socket:", documents);
+  updateDocumentStatus(documents);
+
+});
+
+// Funciones de actualización de vista al cambio de rol e imagen de perfil
+async function updateUserRole() {
+  const userRoleElement = document.getElementById("userRole");
+  const userRoleElement2 = document.getElementById("user-role");
+  const userIdElement = document.getElementById("ID");
+  const userId = userIdElement ? userIdElement.textContent.trim() : null;
+  const toggleButton = document.getElementById("btn-premium");
+
+  if (userRoleElement && userId) {
+    try {
+      const response = await fetch("/api/users");
+      const data = await response.json();
+      const users = data.users;
+      const user = users.find((user) => user._id === userId);
+
+      if (user) {
+        userRoleElement.textContent = user.rol;
+        userRoleElement2.textContent = user.rol;
+        if (toggleButton) {
+          if (user.rol === "usuario") {
+            toggleButton.innerHTML = '<i class="fas fa-star"></i> Actualizar a Premium';
+          } else if (user.role === "premium") {
+            toggleButton.innerHTML = '<i class="fas fa-star"></i> Actualizar a Usuario';
           }
-        } else {
-          console.log("Usuario no encontrado");
         }
-      } catch (error) {
-        console.error("Error al actualizar el rol del usuario:", error);
+      } else {
+        console.log("Usuario no encontrado");
       }
+    } catch (error) {
+      console.error("Error al actualizar el rol del usuario:", error);
     }
   }
+}
 
 function updateProfilePic() {
   const profilePic = document.getElementById("profilePic");

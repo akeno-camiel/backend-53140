@@ -175,3 +175,29 @@
 {"level":"error","message":"[ Wed, 21 Aug 2024 02:27:19 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:27:19.387Z"}
 {"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:29:45.470Z"}
 {"level":"error","message":"[ Wed, 21 Aug 2024 02:29:45 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:29:45.471Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:01:21 GMT ] [null] Error en getProfile --> ViewController: Un error inesperado ocurrió al cargar su perfil","timestamp":"2024-08-21T19:01:21.217Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:01:21 GMT ] [null] Error en getProfile --> ViewController: Un error inesperado ocurrió al cargar su perfil","timestamp":"2024-08-21T19:01:21.264Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:01:49 GMT ] [null] Error en getProfile --> ViewController: Un error inesperado ocurrió al cargar su perfil","timestamp":"2024-08-21T19:01:49.018Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:01:49 GMT ] [null] Error en getProfile --> ViewController: Un error inesperado ocurrió al cargar su perfil","timestamp":"2024-08-21T19:01:49.140Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T19:02:16.891Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:02:16 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement, TIPOS_ERROR.ARGUMENTOS_INVALIDOS","timestamp":"2024-08-21T19:02:16.892Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T19:02:28.488Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:02:28 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement, TIPOS_ERROR.ARGUMENTOS_INVALIDOS","timestamp":"2024-08-21T19:02:28.489Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T19:08:30.078Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:08:30 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement, TIPOS_ERROR.ARGUMENTOS_INVALIDOS","timestamp":"2024-08-21T19:08:30.079Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T19:09:38.138Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:09:38 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement, TIPOS_ERROR.ARGUMENTOS_INVALIDOS","timestamp":"2024-08-21T19:09:38.138Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T19:10:38.800Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:10:38 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement, TIPOS_ERROR.ARGUMENTOS_INVALIDOS","timestamp":"2024-08-21T19:10:38.801Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:40:47 GMT ] [null] Error en getProfile --> ViewController: Un error inesperado ocurrió al cargar su perfil","timestamp":"2024-08-21T19:40:47.491Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 19:40:47 GMT ] [null] Error en getProfile --> ViewController: Un error inesperado ocurrió al cargar su perfil","timestamp":"2024-08-21T19:40:47.590Z"}
+{"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-21T20:34:20.835Z"}
+{"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-21T20:34:20.965Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T20:54:37.279Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 20:54:37 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement, TIPOS_ERROR.ARGUMENTOS_INVALIDOS","timestamp":"2024-08-21T20:54:37.280Z"}
+{"level":"error","message":"Parameter \"filter\" to findOne() must be an object, got \"66c50cf956ed23307ac1de22\" (type string)","timestamp":"2024-08-21T20:54:48.698Z"}
+{"level":"error","message":"Faltan documentos requeridos: adress, statement","timestamp":"2024-08-21T20:56:59.760Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 20:56:59 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: adress,statement, TIPOS_ERROR.ARGUMENTOS_INVALIDOS","timestamp":"2024-08-21T20:56:59.762Z"}
+{"level":"error","message":"Parameter \"filter\" to findOne() must be an object, got \"66c50cf956ed23307ac1de22\" (type string)","timestamp":"2024-08-21T20:57:28.022Z"}
+{"level":"error","message":"Parameter \"filter\" to findOne() must be an object, got \"66c50d7456ed23307ac1de2c\" (type string)","timestamp":"2024-08-21T20:58:04.747Z"}
+{"level":"error","message":"Parameter \"filter\" to findOne() must be an object, got \"66c50d7456ed23307ac1de2c\" (type string)","timestamp":"2024-08-21T20:58:44.813Z"}

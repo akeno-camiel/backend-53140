@@ -179,8 +179,11 @@ export class ViewController {
 
     static getProfile = (req, res) => {
         try {
+            const documentsJson = JSON.stringify(req.user);
+            const user = req.user
+
             res.setHeader('Content-Type', 'text/html');
-            res.status(200).render('profile', { user: req.user, login: req.user })
+            res.status(200).render('profile', { user, documentsJson, documents: user.documents, login: req.user })
         } catch (error) {
             CustomError.createError("getProfile --> ViewController", null, "Un error inesperado ocurrió al cargar su perfil", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }

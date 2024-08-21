@@ -21,6 +21,7 @@ import { router as loggerRouter } from './routes/loggerRouter.js';
 import { router as vistasRouter } from './routes/vistas.router.js';
 import { router as productRouter } from './routes/productRouter.js';
 import { router as sessionsRouter } from './routes/sessionRouter.js';
+import { userService } from './services/userService.js';
 
 
 const PORT = config.PORT;
@@ -65,6 +66,15 @@ export const io = new Server(server);
 io.on("connection", (socket) => {
     logger.info(`Se conecto el cliente ${socket.id}`)
 
+    const emitUsers = async () => {
+        try {
+            const users = await userService.getAllUser();
+            socket.emit("users", users);
+        } catch (error) {
+            console.error("Error al obtener usuarios:", error);
+        }
+    };
+
     socket.on("id", async (userName) => {
         usuarios[socket.id] = userName;
         let messages = await messageModelo.find()
@@ -76,6 +86,32 @@ io.on("connection", (socket) => {
         await messageModelo.create({ user: userName, message: message })
         io.emit("sendMessage", userName, message)
     })
+
+    socket.on("documentUploadSuccess", async ({ userId, documentType }) => {
+        const documents = await userService.getDocumentsByUserId(userId);
+        io.emit("documentsUpdated", { userId, documents });
+    });
+
+    socket.on("updateUserRole", async (userId) => {
+        try {
+            const user = await userService.getUserId({ _id: userId });
+            if (user) {
+                const newRol = user.rol === "premium" ? "user" : "premium";
+                const result = await userService.updateUser(userId, { rol: newRol });
+                if (result.nModified === 0) {
+                    console.log("No se realizaron cambios en el rol del usuario.");
+                } else {
+                    console.log("Rol del usuario actualizado exitosamente.");
+                    io.emit("userRoleUpdated", user); // Emitir el evento `userRoleUpdated` a todos los clientes
+                    await emitUsers(); // Asegúrate de que `emitUsers` esté definido y disponible
+                }
+            }
+        } catch (error) {
+            console.error("Error al actualizar rol de usuario:", error);
+        }
+
+    });
+
 
     socket.on("disconnect", () => {
         const userName = usuarios[socket.id];

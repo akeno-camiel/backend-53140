@@ -32,6 +32,19 @@ export default class UserManager {
         return await userModel.findByIdAndUpdate(id, { rol: nuevoRol }, { runValidators: true, returnDocument: "after" })
     }
 
+    async updateUser (uid, update) {
+        try {
+            const user = await userModel.findByIdAndUpdate(uid, update, { new: true });
+            if (!user) {
+                throw new Error("Usuario no encontrado.");
+            }
+            return user;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    };
+
+
     async deleteUserByEmail(userEmail) {
         try {
             return await userModel.deleteOne({ email: userEmail });

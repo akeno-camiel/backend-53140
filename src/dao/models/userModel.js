@@ -14,6 +14,24 @@ const userSchema = new mongoose.Schema(
         cart: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "cart"
+        },
+        avatar: { name: String, reference: String },
+        documents: {
+            type:
+                [
+                    {
+                        name: String,
+                        reference: String,
+                        docType: {
+                            type: String,
+                            enum: ["ID", "adress", "statement"]
+                        }
+                    }
+                ]
+        },
+        last_connection: {
+            type: Date,
+            default: Date.now
         }
     },
     {

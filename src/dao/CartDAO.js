@@ -30,7 +30,7 @@ export default class CartManager {
             const cart = await cartModelo.findById(cid);
 
             if (!cart) {
-                return CustomError("addProductToCart --> cartDAO", "Carrito no encontrado", `No se encontró un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND);
+                logger.error(`Carrito con id ${cid} no encontrado`);
             }
 
             const existingProductIndex = cart.products.findIndex(product => product.product == pid);
@@ -42,7 +42,7 @@ export default class CartManager {
                 const product = await productManager.getProductsBy({ _id: pid });
 
                 if (!product || product === "Not found") {
-                    return CustomError("addProductToCart --> cartDAO", "Producto no encontrado", `No se encontró un producto con el ID: ${pid}`, TIPOS_ERROR.NOT_FOUND);
+                    logger.error(`Producto con id ${pid} no encontrado`);
                 }
 
                 const newProduct = {

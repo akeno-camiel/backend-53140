@@ -117,3 +117,61 @@
 {"level":"error","message":"Client must be connected before running operations","timestamp":"2024-08-08T00:49:18.615Z"}
 {"level":"error","message":"Client must be connected before running operations","timestamp":"2024-08-08T00:53:42.808Z"}
 {"level":"error","message":"Can't call `openUri()` on an active connection with different connection strings. Make sure you aren't calling `mongoose.connect()` multiple times. See: https://mongoosejs.com/docs/connections.html#multiple_connections","timestamp":"2024-08-08T16:13:06.321Z"}
+{"level":"error","message":"[ Thu, 15 Aug 2024 22:17:39 GMT ] [El carrito no existe] Error en addToCart --> cartController: No existe un carrito con el ID: 66341ef207cc683d4b542225","timestamp":"2024-08-15T22:17:39.981Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-15T22:25:55.382Z"}
+{"level":"error","message":"listen EADDRINUSE: address already in use :::8080","timestamp":"2024-08-15T22:32:38.349Z"}
+{"level":"error","message":"Error al conectar a DB","timestamp":"2024-08-20T20:54:55.640Z"}
+{"level":"error","message":"Error al conectar a DB","timestamp":"2024-08-20T20:56:49.536Z"}
+{"level":"error","message":"Error al conectar a DB","timestamp":"2024-08-20T20:59:51.421Z"}
+{"level":"error","message":"Error al conectar a DB","timestamp":"2024-08-20T21:03:45.703Z"}
+{"level":"error","message":"updateUserDocumentRecords is not defined","timestamp":"2024-08-20T21:41:37.161Z"}
+{"level":"error","message":"updateUserDocumentRecords is not defined","timestamp":"2024-08-20T21:43:16.325Z"}
+{"level":"error","message":"next is not a function","timestamp":"2024-08-20T21:52:11.714Z"}
+{"level":"error","message":"next is not a function","timestamp":"2024-08-20T21:52:13.732Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-20T21:59:57.194Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 21:59:57 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-20T21:59:57.195Z"}
+{"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-20T22:46:09.931Z"}
+{"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-20T22:46:11.182Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-20T22:46:21.327Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 22:46:21 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-20T22:46:21.328Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 22:47:32 GMT ] [No se recibieron archivos] Error en uploadUserDocuments --> UserController: Error en la subida de archivos","timestamp":"2024-08-20T22:47:32.751Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 22:48:00 GMT ] [No se recibieron archivos] Error en uploadUserDocuments --> UserController: Error en la subida de archivos","timestamp":"2024-08-20T22:48:00.167Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 22:48:00 GMT ] [No se recibieron archivos] Error en uploadUserDocuments --> UserController: Error en la subida de archivos","timestamp":"2024-08-20T22:48:00.257Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 22:48:55 GMT ] [No se recibieron archivos] Error en uploadUserDocuments --> UserController: Error en la subida de archivos","timestamp":"2024-08-20T22:48:55.237Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 22:49:54 GMT ] [No se recibieron archivos] Error en uploadUserDocuments --> UserController: Error en la subida de archivos","timestamp":"2024-08-20T22:49:54.305Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 22:50:07 GMT ] [No se recibieron archivos] Error en uploadUserDocuments --> UserController: Error en la subida de archivos","timestamp":"2024-08-20T22:50:07.555Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-20T22:55:26.961Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 22:55:26 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-20T22:55:26.962Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-20T22:55:28.014Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 22:55:28 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-20T22:55:28.014Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-20T22:55:29.446Z"}
+{"level":"error","message":"[ Tue, 20 Aug 2024 22:55:29 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-20T22:55:29.446Z"}
+{"level":"error","message":"document_type no proporcionado","timestamp":"2024-08-20T23:14:23.250Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T01:27:18.007Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 01:27:18 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T01:27:18.008Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T01:30:21.509Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 01:30:21 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T01:30:21.510Z"}
+{"level":"error","message":"Error al conectar a DB","timestamp":"2024-08-21T01:43:23.850Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:12:27.768Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 02:12:27 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:12:27.769Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:12:36.333Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 02:12:36 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:12:36.333Z"}
+{"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-21T02:20:12.644Z"}
+{"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-21T02:20:12.739Z"}
+{"level":"error","message":"Cannot set headers after they are sent to the client","timestamp":"2024-08-21T02:20:18.427Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:20:31.198Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 02:20:31 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:20:31.198Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:20:31.387Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 02:20:31 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:20:31.387Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:21:00.254Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 02:21:00 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:21:00.254Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:22:57.547Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 02:22:57 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:22:57.548Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:25:33.991Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 02:25:33 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:25:33.992Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:27:11.216Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 02:27:11 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:27:11.217Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:27:19.385Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 02:27:19 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:27:19.387Z"}
+{"level":"error","message":"Faltan documentos requeridos: ID, adress, statement","timestamp":"2024-08-21T02:29:45.470Z"}
+{"level":"error","message":"[ Wed, 21 Aug 2024 02:29:45 GMT ] [Faltan documentos requeridos] Error en userPremium --> UserController: Faltan documentos requeridos: ID,adress,statement","timestamp":"2024-08-21T02:29:45.471Z"}

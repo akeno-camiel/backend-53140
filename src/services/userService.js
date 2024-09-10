@@ -13,6 +13,10 @@ class UserService {
         return await this.dao.getAllUser();
     }
 
+    async getInactiveUsers(days) {
+        return await this.dao.getInactiveUsers(days);
+    }
+
     async getUsersBy(filtro = {}) {
         return await this.dao.getUsersBy(filtro);
     }
@@ -40,10 +44,6 @@ class UserService {
     async updateUser(uid, update) {
         return await this.dao.updateUser(uid, update);
     }
-
-    async deleteUsers(filter) {
-        return await this.dao.deleteUsers(filter);
-    };
 
 }
 export const userService = new UserService(new UserManager())

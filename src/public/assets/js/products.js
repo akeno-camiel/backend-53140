@@ -1,6 +1,5 @@
-import { logger } from "../../../utils/Logger.js";
-
 document.addEventListener('DOMContentLoaded', function () {
+    initializeCategorySelect();
     initializeSortSelect();
 });
 
@@ -8,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 const comprar = async (pid) => {
     let inputCart = document.getElementById("cart")
     let cid = inputCart.value
-    logger.debug(`Producto con id ${pid}, Carrito ${cid}`)
+    console.debug(`Producto con id ${pid}, Carrito ${cid}`)
 
     let response = await fetch(`/api/carts/${cid}/products/${pid}`, {
         method: "post"
@@ -19,6 +18,15 @@ const comprar = async (pid) => {
     }
 }
 
+function initializeCategorySelect() {
+    const categorySelect = document.getElementById('categorySelect');
+    if (categorySelect) {
+        const currentUrl = new URL(window.location.href);
+        const currentCategory = currentUrl.searchParams.get('category');
+        const selectedValue = currentCategory ? `/products?category=${currentCategory}` : '/products';
+        categorySelect.value = selectedValue;
+    }
+}
 
 function initializeSortSelect() {
     const sortSelect = document.getElementById('sortSelect');

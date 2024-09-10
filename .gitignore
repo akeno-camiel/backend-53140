@@ -1,8 +1,7 @@
 notas/
 node_modules
-pruebas.js
 /src/dao/CartManagerFS.js
 /src/dao/ProductManagerFS.js
-/src/middleware/passportMiddleware.js
+src/middleware/passportMiddleware.js
 .vscode/
 data/

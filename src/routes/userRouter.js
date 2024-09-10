@@ -15,3 +15,5 @@ router.put("/createnewpassword/:token", verifyJWT, auth(["usuario", "premium"]),
 router.post("/:uid/documents", verifyJWT, auth(["admin", "usuario", "premium"]), upload.array("file"), UserController.uploadUserDocuments)
 
 router.delete("/", verifyJWT, auth(["admin"]), UserController.deleteUsers);
+
+router.delete("/:uid", verifyJWT, auth(["admin"]), UserController.deleteUser);

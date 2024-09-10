@@ -4,6 +4,8 @@ import { logger } from "../utils/Logger.js"
 export const errorHandler = (error, req, res, next) => {
 
     logger.error(`${error.description ? error.description : error.message}`)
+    // logger.error(`${error.description ? error.description : error.message}\nStack trace: ${error.stack}`);
+
 
     switch (error.code) {
         case TIPOS_ERROR.AUTORIZACION || TIPOS_ERROR.AUTENTICACION:

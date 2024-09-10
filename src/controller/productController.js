@@ -5,6 +5,8 @@ import { fakerES_MX as faker, ne } from "@faker-js/faker";
 import { CustomError } from "../utils/CustomError.js";
 import { TIPOS_ERROR } from "../utils/EErrors.js";
 import { userService } from "../services/userService.js";
+import nodemailer from "nodemailer"
+import { config } from "../config/config.js";
 
 export class ProductController {
     static getProducts = async (req, res, next) => {
@@ -133,16 +135,18 @@ export class ProductController {
                 CustomError.createError("createProduct --> productController", "Código repetido", `Error, el código ${code} se está repitiendo`, TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
-            if (!userId && userRol === "admin") {
-                const result = await productService.createProduct(productData);
-                res.status(201).send({ status: "Sucess: Producto agregado", payload: result });
-                return;
+            const productData = { title, description, price, thumbnail, code, stock, category };
+
+            if (userRol === "admin") {
+                productData.owner = "admin";
+            } else {
+                productData.owner = userId;
             }
 
-            const user = await userService.getUserBy(userId);
-            if (user) productData.owner = user._id;
+            const user = await userService.getUserId({ _id: userId });
+            if (user) productData.owner = user.rol;
 
-            nuevoProducto = await productService.createProduct({ title, description, price, thumbnail, code, stock, category })
+            nuevoProducto = await productService.createProduct(productData)
             io.emit("newProduct", title)
             res.setHeader('Content-Type', 'application/json');
             return res.status(201).json(nuevoProducto);
@@ -190,7 +194,7 @@ export class ProductController {
 
             try {
                 let productoModificado = await productService.updateProduct(id, updateData);
-                return res.status(200).json(`El producto ${id} se ha modificado: ${productoModificado}`);
+                return res.status(200).json({ payload: `El producto ${id} se ha modificado: ${productoModificado}` });
             } catch (error) {
                 CustomError.createError("updateProduct --> productController", "Error al modificar el producto", "Error al modificar el producto", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
@@ -202,12 +206,14 @@ export class ProductController {
     static deleteProduct = async (req, res, next) => {
         try {
             let id = req.params.pid;
+            const userId = req.user._id;
 
             if (!isValidObjectId(id)) {
                 CustomError.createError("deleteProduct --> productController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
             }
 
             const product = await productService.getProductsBy({ _id: id });
+            const user = await userService.getUserId({ _id: userId });
             if (!product) {
                 CustomError.createError("deleteProduct --> productController", "No se encuentra el producto", `No existe un producto con el ID: ${id}`, TIPOS_ERROR.NOT_FOUND)
             }
@@ -215,6 +221,35 @@ export class ProductController {
             if (deletedProduct.deletedCount > 0) {
                 let products = await productService.getProducts();
                 io.emit("deletedProduct", products);
+
+                if (user && user.rol === 'admin' && user.email) {
+                    const transport = nodemailer.createTransport({
+                        service: "gmail",
+                        port: 587,
+                        auth: {
+                            user: config.APP_MAIL_DIR,
+                            pass: config.APP_MAIL_PASS,
+                        },
+                    });
+
+                    await transport.sendMail({
+                        from: `Eliminación de producto <${config.APP_MAIL_DIR}>`,
+                        to: user.email,
+                        subject: "Notificación de eliminación de producto",
+                        html: `
+                            <div>
+                                <h1>Estimado/a ${user.first_name},</h1>
+                                <p>Le informamos que el producto con ID ${id} ha sido eliminado.</p>
+                            </div>
+                            <div>
+                                <p>Si tiene alguna pregunta, no dude en contactarnos.</p>
+                            </div>
+                        `,
+                    });
+
+                    console.log(`Correo enviado a: ${user.email}`);
+                }
+
                 return res.status(200).json({ payload: `El producto con id ${id} fue eliminado` });
             } else {
                 CustomError.createError("deleteProduct --> productController", "No se encuentra el producto", `No existe ningun producto con el id ${id}`, TIPOS_ERROR.NOT_FOUND)

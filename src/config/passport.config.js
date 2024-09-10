@@ -8,6 +8,7 @@ import { config } from "./config.js";
 
 import UserManager from "../dao/UsersDAO.js";
 import CartManager from "../dao/CartDAO.js";
+import { userModel } from "../dao/models/userModel.js";
 
 const cartManager = new CartManager();
 const userManager = new UserManager();
@@ -86,7 +87,7 @@ export const initPassport = () => {
             {
                 clientID: config.CLIENT_ID_GITHUB,
                 clientSecret: config.CLIENT_SECRET_GITHUB,
-                callbackURL: `http://localhost:${config.PORT}/api/sessions/callbackGitHub`
+                callbackURL: `http://localhost:8080/api/sessions/callbackGitHub`,
             },
             async (tokenAcceso, tokenRefresh, profile, done) => {
                 try {
@@ -95,10 +96,24 @@ export const initPassport = () => {
                         return done(null, false);
                     }
                     let first_name = profile._json.name
+                    let avatar_url = profile._json.avatar_url;
                     let user = await userManager.getByPopulate({ email })
                     if (!user) {
                         let newCart = await cartManager.createCart()
-                        user = await userManager.createUser({ first_name, email, profile, cart: newCart._id })
+                        user = await userManager.createUser({ first_name, email, profile, avatar: avatar_url, cart: newCart._id })
+                    } else {
+                        await userModel.updateOne(
+                            { _id: user._id },
+                            { $set: { avatar: avatar_url } }
+                        );
+                    }
+
+                    if (!user.cart) {
+                        let newCart = await cartManager.createCart();
+                        await userModel.updateOne(
+                            { _id: user._id },
+                            { $set: { cart: newCart._id } }
+                        );
                     }
 
                     return done(null, user)

@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "cart"
         },
-        avatar: { name: String, reference: String },
+        avatar: String,
         documents: {
             type:
                 [

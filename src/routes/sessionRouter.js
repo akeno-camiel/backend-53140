@@ -7,7 +7,7 @@ router.get('/logout', SessionController.logout)
 
 router.get('/error', SessionController.error)
 
-router.get('/github', passport.authenticate("github", {}), (req, res) => { })
+router.get('/github', passport.authenticate("github", { scope: ['user:email'] }))
 
 router.get('/callbackGitHub', passport.authenticate("github", { failureRedirect: "/api/sessions/error", session: false }), SessionController.callbackGitHub)
 

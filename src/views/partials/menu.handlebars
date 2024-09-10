@@ -1,16 +1,37 @@
-<ul>
-    <li><a href="/">Inicio</a></li>
-    {{#if login}}
-    <li><a href="/profile">Perfil</a></li>
-    <li><a href="/products">Productos</a></li>
-    <li><a href="/realtimeproducts">Productos en tiempo real</a></li>
-    <li><a href="/chat">Chat</a></li>
-    <li><a href="/carts/{{cart._id}}">Ver carrito</a></li>
-
-</ul>
-<button><a href="/api/sessions/logout">Logout</a></button>
-{{else}}
-<li><a href="/register">Registro</a></li>
-<li><a href="/login">Login</a></li>
-{{/if}}
-</ul>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="navbar navbar-expand-lg bg-warning">
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse d-flex justify-content-around" id="navbarNavAltMarkup">
+                    <div class="navbar-nav"></div>
+                    <nav class="nav-link mx-5"><a href="/"><i class="bi bi-house-fill" style="font-size: 30px;"></i></a>
+                    </nav>
+                    {{#if login}}
+                    {{#if isAdmin}}
+                    <nav class="nav-link mx-5"><a href="/adminPanel">Admin Panel</a></nav>
+                    <nav class="nav-link mx-5"><a href="/realtimeproducts">Productos en tiempo real</a></nav>
+                    {{else}}
+                    {{#if user.avatar}}
+                    <nav class="nav-link mx-5"><a href="/profile"><img src="{{user.avatar}}" alt="Perfil"
+                                style="max-width: 50px; border-radius: 100%;"></a></nav>
+                    {{else}}
+                    <nav class="nav-link mx-5"><a href="/profile"><img src="/assets/img/profiles/defaultProfilePic.jpg"
+                                alt="Perfil" style="max-width: 50px; border-radius: 100%;"></a></nav>
+                    {{/if}}
+                    <nav class="nav-link mx-5"><a href="/products">Productos</a></nav>
+                    <nav class="nav-link mx-5"><a href="/realtimeproducts">Productos en tiempo real</a></nav>
+                    <nav class="nav-link mx-5"><a href="/chat"><i class="bi bi-chat-dots-fill"
+                                style="font-size: 30px;"></i></a></nav>
+                    <nav class="nav-link mx-5"><a href="/carts/{{cart._id}}"><i class="bi bi-cart-plus-fill"
+                                style="font-size: 30px;"></i></a></nav>
+                    {{/if}}
+                    <button class="btn btn-outline-warning mt-3 mb-3"><a href="/api/sessions/logout">Logout</a></button>
+                    {{else}}
+                    <nav class="nav-link mx-5"><a href="/register">Registro</a></nav>
+                    <nav class="nav-link mx-5"><a href="/login">Login</a></nav>
+                    {{/if}}
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>

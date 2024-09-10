@@ -3,6 +3,7 @@ import { TIPOS_ERROR } from "../utils/EErrors.js";
 import { logger } from "../utils/Logger.js";
 import ProductManager from "./ProductDAO.js";
 import { cartModelo } from './models/cartModelo.js';
+import { productsModelo } from "./models/productsModelo.js";
 
 export default class CartManager {
 
@@ -72,7 +73,7 @@ export default class CartManager {
             );
             return `Carrito ${JSON.stringify(cart, null, 5)}`
         } catch (error) {
-            CustomError.createError("updateCart --> cartDAO", "Error al actualizar el carrito", "Error actualizar el carrito", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
+            throw new Error(`Error al actualizar el carrito: ${error.message}`);
         }
     };
 
@@ -85,7 +86,7 @@ export default class CartManager {
             ).populate("products.product");
             return cart;
         } catch (error) {
-            CustomError.createError("updateProductQ --> cartDAO", "Error al actualizar la cantidad de productos", "Error actualizar la cantidad de productos", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
+            throw new Error(`Error al actualizar la cantidad total de productos en el carrito: ${error.message}`);
         }
     };
 
@@ -98,7 +99,7 @@ export default class CartManager {
             );
 
             if (!cart) {
-                return CustomError("deleteAllProductsFromCart --> cartDAO", "Carrito no encontrado", `No se encontró un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND);
+                throw new Error(`Carrito no encontrado con el ID: ${cid}`);
             }
 
             cart.products = [];
@@ -108,7 +109,7 @@ export default class CartManager {
 
             return cart;
         } catch (error) {
-            return next(error)
+            throw new Error(`Error al obtener la cantidad total de productos en el carrito: ${error.message}`);
         }
     };
 
@@ -121,7 +122,7 @@ export default class CartManager {
             );
 
             if (!cart) {
-                return CustomError("deleteProductFromCart --> cartDAO", "Carrito no encontrado", `No se encontró un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND);
+                throw new Error(`Carrito no encontrado con el ID: ${cid}`);
             }
 
             const updatedProduct = cart.products.find(p => p.product == pid);
@@ -135,4 +136,34 @@ export default class CartManager {
             return next(error)
         }
     };
+
+
+    async insertArray(cid, products) {
+        try {
+            const arr = [];
+            for (const item of products) {
+                if (!item.product._id) {
+                    throw new Error("Producto sin ID detectado");
+                }
+                const object = await productsModelo.findById(item.product._id);
+
+                if (!object) {
+                    throw new Error(`Producto con ID ${item.product._id} no encontrado`);
+                }
+
+                arr.push({
+                    _id: object._id,
+                    quantity: item.quantity,
+                });
+            }
+            const filter = { _id: cid };
+            const update = { $set: { products: arr } };
+            const updateCart = await cartModelo.findOneAndUpdate(filter, update, {
+                new: true,
+            });
+            return updateCart;
+        } catch (error) {
+            throw new Error("Error al insertar productos en el carrito");
+        }
+    }
 };

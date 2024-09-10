@@ -66,30 +66,44 @@ export const io = new Server(server);
 io.on("connection", (socket) => {
     logger.info(`Se conecto el cliente ${socket.id}`)
 
-    const emitUsers = async () => {
-        try {
-            const users = await userService.getAllUser();
-            socket.emit("users", users);
-        } catch (error) {
-            console.error("Error al obtener usuarios:", error);
-        }
+    const emitUsers = () => {
+        io.emit("usersList", Object.values(usuarios));
     };
 
     socket.on("id", async (userName) => {
         usuarios[socket.id] = userName;
-        let messages = await messageModelo.find()
-        socket.emit("previousMessages", messages)
-        socket.broadcast.emit("newUser", userName)
-    })
+        try {
+            let messages = await messageModelo.find();
+            socket.emit("previousMessages", messages);
+            socket.broadcast.emit("newUser", userName);
+            emitUsers();
+        } catch (error) {
+            console.error("Error al obtener mensajes previos:", error);
+        }
+    });
 
     socket.on("newMessage", async (userName, message) => {
-        await messageModelo.create({ user: userName, message: message })
-        io.emit("sendMessage", userName, message)
-    })
+        try {
+            const user = await userService.getUsersBy({ email: userName });
+            const avatar = user?.avatar || "/assets/img/profiles/defaultProfilePic.jpg";
+
+            await messageModelo.create({ user: userName, message });
+            io.emit("sendMessage", userName, message, avatar);
+        } catch (error) {
+            console.error("Error al enviar mensaje:", error);
+        }
+    });
 
     socket.on("documentUploadSuccess", async ({ userId, documentType }) => {
         const documents = await userService.getDocumentsByUserId(userId);
         io.emit("documentsUpdated", { userId, documents });
+    });
+
+    socket.on("getUsers", (callback) => {
+        userService
+            .getAllUser({})
+            .then((users) => callback(users))
+            .catch((error) => console.error(error));
     });
 
     socket.on("updateUserRole", async (userId) => {
@@ -99,27 +113,26 @@ io.on("connection", (socket) => {
                 const newRol = user.rol === "premium" ? "user" : "premium";
                 const result = await userService.updateUser(userId, { rol: newRol });
                 if (result.nModified === 0) {
-                    console.log("No se realizaron cambios en el rol del usuario.");
+                    logger.info("No se realizaron cambios en el rol del usuario.");
                 } else {
-                    console.log("Rol del usuario actualizado exitosamente.");
-                    io.emit("userRoleUpdated", user); // Emitir el evento `userRoleUpdated` a todos los clientes
-                    await emitUsers(); // Asegúrate de que `emitUsers` esté definido y disponible
+                    logger.info("Rol del usuario actualizado exitosamente.");
+                    io.emit("userRoleUpdated", user);
+                    emitUsers();
                 }
             }
         } catch (error) {
             console.error("Error al actualizar rol de usuario:", error);
         }
-
     });
-
 
     socket.on("disconnect", () => {
         const userName = usuarios[socket.id];
-        delete usuarios[socket.id];
         if (userName) {
+            delete usuarios[socket.id];
             io.emit("userDisconnected", userName);
+            emitUsers();
         }
-    })
+    });
 })
 
 const connDB = async () => {

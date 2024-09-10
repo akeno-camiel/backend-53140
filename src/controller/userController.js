@@ -6,6 +6,8 @@ import { TIPOS_ERROR } from "../utils/EErrors.js"
 import { CustomError } from "../utils/CustomError.js"
 import { logger } from "../utils/Logger.js"
 import nodemailer from 'nodemailer'
+import { config } from "../config/config.js"
+import { GetUsersDTO } from "../dto/getUserDTO.js"
 
 
 const updateUserDocumentRecords = async (uid, documents, avatar) => {
@@ -69,13 +71,13 @@ export class UserController {
                 service: "gmail",
                 port: 587,
                 auth: {
-                    user: "akeno.camiel@gmail.com",
-                    pass: "gkzftvorupgjdqpr",
+                    user: `${config.APP_MAIL_DIR}`,
+                    pass: `${config.APP_MAIL_PASS}`,
                 },
             })
 
             await transport.sendMail({
-                from: "Recuperación de contraseña <akeno.camiel@gmail.com>",
+                from: `Recuperación de contraseña <${config.APP_MAIL_DIR}>`,
                 to: email,
                 subject: "Código de recuperación de contraseña",
                 html: `
@@ -111,9 +113,7 @@ export class UserController {
 
         try {
             let decoded = jwt.verify(token, SECRET);
-            // logger.debug("Token Decodificado:", decoded);
             let id = decoded._id;
-            // logger.debug("ID del Usuario:", id);
             const user = await userService.getUserId(id);
             if (!user) {
                 return CustomError.createError("createNewPassword --> UserController", "Usuario no encontrado", "El usuario con el ID proporcionado no existe", TIPOS_ERROR.NOT_FOUND);
@@ -244,14 +244,14 @@ export class UserController {
                 if (file.fieldname === "file") {
                     if (file.mimetype.startsWith("image")) {
                         if (!avatarToSave) {
-                            reference = `/public/assets/img/profiles/${uid}/${file.filename}`;
+                            reference = `/assets/img/profiles/${uid}/${file.filename}`;
                             avatarToSave = {
                                 name: file.filename,
                                 reference: reference,
                             };
                         }
                     } else {
-                        reference = ` /public/assets/documents/${uid}/${file.filename}`;
+                        reference = `/assets/documents/${uid}/${file.filename}`;
                         documentsToSave.push({
                             name: file.filename,
                             reference: reference,
@@ -260,8 +260,14 @@ export class UserController {
                     }
                 }
             });
+            console.log('Avatar Path:', avatarToSave ? avatarToSave.reference : 'No se ha guardado un avatar');
 
             const response = await updateUserDocumentRecords(uid, documentsToSave, avatarToSave);
+
+            if (avatarToSave) {
+                await userService.updateUser(uid, { avatar: avatarToSave.reference });
+            }
+
             return res.status(200).send({ status: "success", ...response });
         } catch (error) {
             return next(error)
@@ -270,33 +276,53 @@ export class UserController {
 
     static getUsers = async (req, res) => {
         let users = await userService.getAllUser()
-        return res.status(200).json({ users })
+        let userDTOs = users.map(user => new GetUsersDTO(user));
+
+        return res.status(200).json(userDTOs)
     }
 
     static deleteUsers = async (req, res) => {
         const { logger } = req;
         try {
-            const inactiveDateLimit = new Date();
-            inactiveDateLimit.setDate(inactiveDateLimit.getDate() - 2);
-            logger.info(`Fecha y hora de hace dos días: ${inactiveDateLimit}`);
-
-            const usersToDelete = await userService.getAllUsers({ last_connection: { $lt: inactiveDateLimit } });
+            const usersToDelete = await userService.getInactiveUsers(2);
             logger.info(`Usuarios a eliminar: ${usersToDelete.length}`);
+
+            const usersToDeleteFiltered = usersToDelete.filter(user => user.rol !== 'admin');
+            logger.info(`Usuarios a eliminar después de filtrar administradores: ${usersToDeleteFiltered.length}`);
+
+            const emailsToDelete = usersToDeleteFiltered.map(user => user.email).filter(email => email);
+            logger.info(`Correos electrónicos a eliminar: ${emailsToDelete.length}`);
+            logger.info(`Correos electrónicos: ${JSON.stringify(emailsToDelete)}`);
+
 
             const transport = nodemailer.createTransport({
                 service: "gmail",
                 port: 587,
                 auth: {
-                    user: "akeno.camiel@gmail.com",
-                    pass: "gkzftvorupgjdqpr",
+                    user: `${config.APP_MAIL_DIR}`,
+                    pass: `${config.APP_MAIL_PASS}`,
                 },
             })
 
             for (const user of usersToDelete) {
-                const message = `Hola ${user.first_name}, tu cuenta ha sido eliminada debido a inactividad.`;
 
                 if (user.email) {
-                    await sendEmail(transport, user.email, message);
+                    await transport.sendMail({
+                        from: `Eliminación de cuenta <${config.APP_MAIL_DIR}>`,
+                        to: user.email,
+                        subject: "AVISO - Eliminación de cuenta",
+                        html: `
+                    <div>
+                        <h1>Hace mucho no te vemos, ${user.first_name}.</h1>
+                        <h3>Lamentamos comunicarte que la cuenta asociada con este email ha sido eliminada por inactividad.</h3>
+                    </div>
+                    <div>
+                        <p>Pero no te preocupes, siempre podés volver a registrarte <a href="http://localhost:8080/register">haciendo click aqui</a></p>
+                        <br>
+                        <p>Esperamos volver a verte pronto!.</p>
+                    </div>
+                    `
+                    });
                     logger.info(`Correo enviado a: ${user.email}`);
                 } else {
                     logger.warning(`No se pudo enviar correo al usuario ya que no posee dirección de correo electrónico.`);
@@ -308,12 +334,66 @@ export class UserController {
                 }
             }
 
-            await userService.deleteUsers({ _id: { $in: usersToDelete.map((user) => user._id) } });
-            logger.info(`Usuarios eliminados correctamente. Total eliminados: ${usersToDelete.length}`);
+            if (emailsToDelete.length > 0) {
+                await userService.deleteUserByEmail(emailsToDelete);
+                logger.info(`Usuarios eliminados correctamente. Total eliminados: ${emailsToDelete.length}`);
+            } else {
+                logger.info(`No hay usuarios para eliminar.`);
+            }
             res.json({ message: "Usuarios eliminados correctamente" });
         } catch (error) {
             logger.error(`Error al eliminar usuarios: ${error.message}`);
             res.status(500).json({ message: "Hubo un error al eliminar los usuarios" });
+        }
+    };
+
+    static deleteUser = async (req, res, next) => {
+        const { uid } = req.params;
+        try {
+            const userToDelete = await userService.getUserId(uid);
+
+            if (!userToDelete) {
+                return CustomError.createError("createNewPassword --> UserController", "Usuario no encontrado", "El usuario con el ID proporcionado no existe", TIPOS_ERROR.NOT_FOUND);
+            }
+
+            const transport = nodemailer.createTransport({
+                service: "gmail",
+                port: 587,
+                auth: {
+                    user: `${config.APP_MAIL_DIR}`,
+                    pass: `${config.APP_MAIL_PASS}`,
+                },
+            })
+
+            if (userToDelete.email) {
+                transport.sendMail({
+                    from: `Eliminación de cuenta <${config.APP_MAIL_DIR}>`,
+                    to: userToDelete.email,
+                    subject: "AVISO - Eliminación de cuenta",
+                    html: `
+                <div>
+                    <h1>Hola, ${userToDelete.first_name}.</h1>
+                    <h3>Lamentamos comunicarte que la cuenta asociada con este email ha sido eliminada por el administrador.</h3>
+                </div>
+                <div>
+                    <p>Pero no te preocupes, siempre podés volver a registrarte <a href="http://localhost:8080/register">haciendo click aqui</a></p>
+                    <br>
+                    <p>Esperamos volver a verte pronto!.</p>
+                </div>
+                `
+                });
+                req.logger.info(`Correo enviado a: ${userToDelete.email}`);
+            } else {
+                req.logger.warning(
+                    `No se pudo enviar correo a ${userToDelete.first_name} (${userToDelete._id}) porque no tiene una dirección de correo electrónico.`
+                );
+            }
+
+            await userService.deleteUserByEmail({ email: userToDelete.email });
+            req.logger.info(`Usuario con ID ${uid} eliminado correctamente.`);
+            res.json({ message: "Usuario eliminado correctamente" });
+        } catch (error) {
+            return next(error)
         }
     };
 }

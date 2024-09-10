@@ -4,6 +4,9 @@ import { productService } from "../services/productService.js";
 import { ticketService } from "../services/ticketService.js";
 import { CustomError } from "../utils/CustomError.js";
 import { TIPOS_ERROR } from "../utils/EErrors.js";
+import nodemailer from 'nodemailer'
+import { config } from "../config/config.js";
+import { processPurchase } from "../utils/purchaseHelper.js";
 
 
 export class CartController {
@@ -191,72 +194,18 @@ export class CartController {
     }
 
     static purchase = async (req, res, next) => {
+
         try {
             const { cid } = req.params;
-
-            if (!isValidObjectId(cid)) {
-                CustomError.createError("purchase --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS);
-            }
-
-            const cart = await cartService.getCartsBy({ _id: cid });
-
-            if (!cart) {
-                CustomError.createError("purchase --> cartController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND)
-            }
-
-            const productsInCart = cart.products;
-            let productosParaFacturar = [];
-            let productosRestantes = [];
-
-            for (let product of productsInCart) {
-                const { product: { _id: pid }, quantity } = product;
-
-                if (!isValidObjectId(pid)) {
-                    CustomError.createError("purchase --> cartController", "ID inválido", "Ingrese un ID válido de MONGODB", TIPOS_ERROR.ARGUMENTOS_INVALIDOS)
-                }
-
-                const productData = await productService.getProductsBy({ _id: pid });
-
-                if (!productData) {
-                    CustomError.createError("purchase --> cartController", "El producto no existe", `No existe un producto con el ID: ${pid}`, TIPOS_ERROR.NOT_FOUND)
-                }
-
-                if (productData.stock < quantity) {
-                    productosRestantes.push(product);
-                } else {
-                    const newStock = productData.stock - quantity;
-                    await productService.updateProduct(pid, { stock: newStock });
-
-                    productosParaFacturar.push({
-                        product: productData,
-                        quantity
-                    });
-                }
-            }
-
-            const totalAmount = productosParaFacturar.reduce((total, item) => total + (item.product.price * item.quantity), 0);
-            const ticket = await ticketService.createTicket({
-                code: `T-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-                purchase_datetime: new Date(),
-                purchaser: req.user.email,
-                products: productosParaFacturar.map(item => ({
-                    pid: item.product._id,
-                    title: item.product.title,
-                    price: item.product.price,
-                    quantity: item.quantity,
-                    subtotal: item.product.price * item.quantity
-                })),
-                amount: totalAmount
-            });
-
-            await cartService.updateCart(cid, productosRestantes);
+            const result = await processPurchase(cid, req.user.email);
 
             return res.status(200).json({
                 message: "Compra realizada exitosamente",
-                ticket
+                ticket: result.ticket
             });
         } catch (error) {
-            return next(error)
+            return next(error);
         }
     };
+
 }

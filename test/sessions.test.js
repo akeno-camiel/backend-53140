@@ -68,7 +68,6 @@ describe("Test integral del router de sessions", function () {
         it("Debería obtener un usuario por ID correctamente", async () => {
             const createdUser = await userService.createUser(newUser);
             const fetchedUser = await userService.getUsersBy({ _id: createdUser._id });
-            // console.log("Usuario obtenido por ID:", fetchedUser.email);
             expect(fetchedUser).to.have.property("_id").and.not.null;
             expect(fetchedUser.email).to.equal(createdUser.email);
         });
@@ -80,7 +79,6 @@ describe("Test integral del router de sessions", function () {
                 email: newUser.email,
                 password: newUser.password,
             });
-            // console.log("respuesta de login:", loginNewUser.status);
             expect(loginNewUser.status).to.equal(200);
             expect(loginNewUser.body).to.have.property("token").and.not.null;
         });
@@ -88,7 +86,6 @@ describe("Test integral del router de sessions", function () {
         it("Debería eliminar un usuario por email correctamente", async () => {
             await userService.createUser(newUser);
             const deleteResult = await userService.deleteUserByEmail(newUser.email);
-            // console.log("Resultado de la eliminación:", deleteResult);
 
             const getUser = await userService.getUsersBy({ email: newUser.email });
             expect(getUser).to.be.null;
@@ -100,7 +97,6 @@ describe("Test integral del router de sessions", function () {
                 email: newUser.email,
                 password: "wrongpassword",
             });
-            // console.log("respuesta de login con credenciales incorrectas:", res.body);
             expect(res.statusCode).to.equal(302);
             expect(res.headers).to.have.property("location").that.includes("/error");
         });

@@ -34,5 +34,9 @@ export const config = {
     SECRET: process.env.SECRET,
     CLIENT_ID_GITHUB: process.env.CLIENT_ID_GITHUB,
     CLIENT_SECRET_GITHUB: process.env.CLIENT_SECRET_GITHUB,
-    MODE: process.env.MODE
+    MODE: process.env.MODE,
+    APP_MAIL_PASS: process.env.APP_MAIL_PASS,
+    APP_MAIL_DIR: process.env.APP_MAIL_DIR,
+    ADMIN_MAIL: process.env.ADMIN_MAIL,
+    ADMIN_MAIL_PASSWORD: process.env.ADMIN_MAIL_PASSWORD
 }

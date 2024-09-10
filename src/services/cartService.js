@@ -31,6 +31,9 @@ class CartService {
     async deleteProductFromCart(cid, pid) {
         return await this.dao.deleteProductFromCart(cid, pid);
     }
+    async insertArray(cid, purchaseError) {
+        return await this.dao.insertArray(cid, purchaseError);
+    }
 }
 
 export const cartService = new CartService(new CartManager())

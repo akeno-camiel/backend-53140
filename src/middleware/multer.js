@@ -45,7 +45,7 @@ const storage = multer.diskStorage({
             fileName = `Comprobante-Cuenta${fileExtension}`;
             break;
         case "avatar":
-            fileName = "ProfilePic";
+            fileName = `ProfilePic${fileExtension}`;
             break;
         default:
             fileName = `${fileName}`;

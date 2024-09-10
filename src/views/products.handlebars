@@ -1,24 +1,19 @@
-<h2>Productos</h2>
-<hr><br>{{>menu}}<br>
+{{>menu}}
 
 {{#if user}}
-<p><strong>Hola {{user.first_name}}</strong></p>
+<h2><strong>Hola {{user.first_name}}</strong></h2>
 {{/if}}
-<h3>Categoría</h3>
-
-<div>
-    <select id="categorySelect">
+<div class="container">
+    <select class="col-md-5 px-4 m-4" style="background-color: white; border:none;" id="categorySelect"> Categorías
         <option value="/products">Todos</option>
         {{#each categories}}
         <option style="text-transform: capitalize" value="/products?category={{this}}">{{this}}</option>
         {{/each}}
     </select>
-</div>
 
-<input type="text" value="{{cart._id}}" hidden id="cart">
+    <input type="text" value="{{cart._id}}" hidden id="cart">
 
-<div>
-    <select id="sortSelect">
+    <select class="col-md-5 px-4 m-4" style="background-color: white; border:none;" id="sortSelect">
         <option selected disabled>Ordenar</option>
         <option value="asc">Precio: Menor a Mayor</option>
         <option value="desc">Precio: Mayor a Menor</option>
@@ -26,24 +21,26 @@
 </div>
 
 <ul id="prod">
-    {{#each payload}}
-    <div class="container">
+    <div class="container my-2">
         <div class="row">
-            <div class="col mx-1">
-                <div class="card" style="width: 75vw;">
+            {{#each payload}}
+            <div class="col-md-3 g-4">
+                <div class="card  justify-content-center align-items-center mx-2">
                     <div class="card-body">
                         <h5 class="card-title">{{title}}</h5>
                         <p style="text-transform: capitalize" class="card-text"><strong>{{category}}</strong></p>
-                        <img src="{{thumbnail}}" alt={{title}}>
-                        <p class="card-text">{{description}}</p>
+                        <img class="card-img-top" style="width: max-width;" src="{{thumbnail}}" alt={{title}}>
+                        <div class="description-box">
+                            <p class="card-text">{{description}}</p>
+                        </div>
                         <p class="card-text"><strong>$ {{price}}</strong></p>
-                        <button onclick="comprar ('{{_id}}')">Añadir al carrito</button>
                     </div>
+                    <button class="btn btn-warning p-1" onclick="comprar ('{{_id}}')">Añadir al carrito</button>
                 </div>
             </div>
+            {{/each}}
         </div>
     </div>
-    {{/each}}
 </ul>
 <br><br>
 

@@ -1,6 +1,5 @@
 const socket = io();
 
-// Funciones de carga de imágenes y vista previa
 function previewImage() {
   const fileInput = document.getElementById("profilePictureInput");
   const imagePreview = document.getElementById("imagePreview");
@@ -17,11 +16,11 @@ function previewImage() {
 
       imagePreview.innerHTML = "";
       imagePreview.appendChild(image);
-      cancelButtonContainer.innerHTML = `<button class="btn btn-danger" style="padding: 0.2rem 0.4rem; border-radius: 50%; margin: 0.4rem; font-size: 1.5em;" onclick="cancelImageSelection()"><i class="fa fa-close" id="btnCerrar" aria-hidden="true"></i></button>`;
+      cancelButtonContainer.innerHTML = `<button class="btn btn-danger" style="padding: 0.2rem 0.4rem; border-radius: 50%; margin: 0.4rem; font-size: 1.5em;" onclick="cancelImageSelection()"><i class="bi bi-x" id="btnCerrar" aria-hidden="true"></i></button>`;
     };
     reader.readAsDataURL(fileInput.files[0]);
   } else {
-    imagePreview.innerHTML = `<i class="fa-regular fa-image" style="font-size:100px"></i>`;
+    imagePreview.innerHTML = `<i class="bi bi-image" style="font-size:100px"></i>`;
     cancelButtonContainer.innerHTML = "";
   }
 }
@@ -32,7 +31,7 @@ function cancelImageSelection() {
   const cancelButtonContainer = document.getElementById("cancelButtonContainer");
 
   if (fileInput) fileInput.value = "";
-  if (imagePreview) imagePreview.innerHTML = `<i class="fa-regular fa-image" style="font-size:100px"></i>`;
+  if (imagePreview) imagePreview.innerHTML = `<i class="bi bi-image" style="font-size:100px"></i>`;
   if (cancelButtonContainer) cancelButtonContainer.innerHTML = "";
 }
 
@@ -72,7 +71,6 @@ function uploadFile(type, inputId, docType) {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log("Respuesta de la subida de archivo:", data);
       Toastify({
         text: "Archivo subido exitosamente",
         style: {
@@ -104,10 +102,7 @@ function uploadFile(type, inputId, docType) {
 }
 
 
-// Funciones de carga de documentos
 function updateDocumentStatus(documents) {
-  console.log("Documentos recibidos:", documents); // Log para ver qué documentos se están recibiendo
-
   if (!Array.isArray(documents)) {
     console.error("Expected an array for documents, but got:", documents);
     documents.forEach(doc => {
@@ -123,7 +118,6 @@ function updateDocumentStatus(documents) {
 
   function updateStatus(docType, statusElementId) {
     const statusElement = document.getElementById(statusElementId);
-    console.log("Actualizando estado para:", docType, statusElement);
 
     if (!statusElement) {
       console.error("Elemento no encontrado para:", statusElementId);
@@ -131,10 +125,9 @@ function updateDocumentStatus(documents) {
     }
 
     const found = documents.some((d) => d.docType === docType);
-    console.log("Documento encontrado:", found);
 
     if (found) {
-      statusElement.textContent = "Cargado";
+      statusElement.textContent = "Listo";
       statusElement.classList.remove("bg-danger");
       statusElement.classList.add("bg-success");
     } else {
@@ -152,12 +145,10 @@ updateStatus("statement", "status-statement");
 }
 
 socket.on("documentsUpdated", ({ userId, documents }) => {
-  console.log("Documentos recibidos en el socket:", documents);
   updateDocumentStatus(documents);
 
 });
 
-// Funciones de actualización de vista al cambio de rol e imagen de perfil
 async function updateUserRole() {
   const userRoleElement = document.getElementById("userRole");
   const userRoleElement2 = document.getElementById("user-role");
@@ -177,16 +168,16 @@ async function updateUserRole() {
         userRoleElement2.textContent = user.rol;
         if (toggleButton) {
           if (user.rol === "usuario") {
-            toggleButton.innerHTML = '<i class="fas fa-star"></i> Actualizar a Premium';
-          } else if (user.role === "premium") {
-            toggleButton.innerHTML = '<i class="fas fa-star"></i> Actualizar a Usuario';
+            toggleButton.innerHTML = '<i class="bi bi-star me-2"></i> Actualizar a Premium';
+          } else if (user.rol === "premium") {
+            toggleButton.innerHTML = '<i class="bi bi-person-fill"></i> Actualizar a Usuario';
           }
         }
       } else {
         console.log("Usuario no encontrado");
       }
     } catch (error) {
-      console.error("Error al actualizar el rol del usuario:", error);
+      console.log("Error al actualizar el rol del usuario:", error);
     }
   }
 }
@@ -211,7 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (documentsJson) {
     try {
-      const user = JSON.parse(documentsJson.replace(/&quot;/g, '"'));
+      const user = JSON.parse(documentsJson);
       const userDocuments = user.documents || [];
       updateDocumentStatus(userDocuments);
     } catch (error) {

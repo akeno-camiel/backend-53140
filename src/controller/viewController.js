@@ -5,6 +5,10 @@ import { CustomError } from '../utils/CustomError.js';
 import { TIPOS_ERROR } from '../utils/EErrors.js';
 import jwt from 'jsonwebtoken';
 import { SECRET } from '../utils/utils.js';
+import { ticketService } from '../services/ticketService.js';
+import { isValidObjectId } from "mongoose";
+import { processPurchase } from '../utils/purchaseHelper.js';
+import { userService } from '../services/userService.js';
 
 
 
@@ -21,35 +25,36 @@ export class ViewController {
         }
         res.setHeader('Content-Type', 'text/html')
         res.status(200).render('home', { products })
-    }
+    };
 
     static getRealTimeProducts = async (req, res) => {
         let products
+        let user = req.user;
+        let cart = { _id: req.user.cart }
+        const isAdmin = user && user.rol === 'admin';
         try {
             products = await productService.getProducts();
         } catch (error) {
             CustomError.createError("getRealTimeProducts --> ViewController", null, "Un error inesperado ocurrió al obtener los productos en tiempo real", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
         res.setHeader('Content-Type', 'text/html')
-        res.status(200).render('realTime', { products })
-    }
+        res.status(200).render('realTime', { products, user, cart, login: req.user, isAdmin })
+    };
 
     static getChat = (req, res) => {
         try {
+            let cart = { _id: req.user.cart }
             res.setHeader("Content-Type", "text/html")
-            res.status(200).render("chat")
+            res.status(200).render("chat", { user: req.user, cart, login: req.user })
         } catch (error) {
             CustomError.createError("getChat --> ViewController", null, "Un error inesperado ocurrió al cargar el chat", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
-    }
+    };
 
     static getProductsPaginate = async (req, res, next) => {
 
         let user = req.user;
-        let cart = {
-            _id: req.user.cart
-        }
-
+        let cart = { _id: req.user.cart }
         try {
             const { page = 1, limit = 10, sort } = req.query;
 
@@ -138,7 +143,7 @@ export class ViewController {
         } catch (error) {
             return next(error)
         }
-    }
+    };
 
     static getCartById = async (req, res, next) => {
         try {
@@ -147,14 +152,22 @@ export class ViewController {
             let cart = await cartService.getCartsBy({ _id: cid })
 
             if (cart) {
-                res.status(200).render("cart", { cart });
+                const updatedProducts = cart.products.map(product => ({
+                    ...product,
+                    subtotal: product.product.price * product.quantity
+                }));
+
+                const totalAmount = updatedProducts.reduce((total, item) => total + item.subtotal, 0);
+
+                res.status(200).render("cart", { cart: { ...cart, products: updatedProducts }, user: req.user, totalAmount, login: req.user });
             } else {
                 CustomError.createError("getCartById --> ViewController", "El carrito no existe", `No existe un carrito con el ID: ${cid}`, TIPOS_ERROR.NOT_FOUND)
             }
+
         } catch (error) {
             return next(error)
         }
-    }
+    };
 
     static register = (req, res) => {
         try {
@@ -164,7 +177,7 @@ export class ViewController {
         } catch (error) {
             CustomError.createError("register --> ViewController", null, "Un error inesperado ocurrió al registrarse", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
-    }
+    };
 
 
     static login = (req, res) => {
@@ -175,36 +188,36 @@ export class ViewController {
         } catch (error) {
             CustomError.createError("login --> ViewController", null, "Un error inesperado ocurrió al iniciar sesión", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
-    }
+    };
 
     static getProfile = (req, res) => {
         try {
             const documentsJson = JSON.stringify(req.user);
             const user = req.user
+            let cart = { _id: req.user.cart }
 
             res.setHeader('Content-Type', 'text/html');
-            res.status(200).render('profile', { user, documentsJson, documents: user.documents, login: req.user })
+            res.status(200).render('profile', { user, documentsJson, documents: user.documents, login: req.user, cart })
         } catch (error) {
             CustomError.createError("getProfile --> ViewController", null, "Un error inesperado ocurrió al cargar su perfil", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
-    }
+    };
 
     static forgotPassword = (req, res) => {
         try {
+            let cart = { _id: req.user.cart }
             res.setHeader("Content-Type", "text/html")
-            res.status(200).render("forgotPassword")
+            res.status(200).render("forgotPassword", { user: req.user, login: req.user, cart })
         } catch (error) {
             CustomError.createError("forgotPassword --> ViewController", null, "Un error inesperado ocurrió al cargar su perfil", TIPOS_ERROR.INTERNAL_SERVER_ERROR);
         }
-    }
+    };
 
     static generateNewPassword = (req, res) => {
         let token = req.params.token
         let decoded
-        console.log(`Token recibido en la ruta: ${token}`);
         try {
             decoded = jwt.verify(token, SECRET);
-            console.log('Token válido y aún en vigencia:', decoded);
         } catch (err) {
             if (err.name === 'TokenExpiredError') {
                 console.error('El token ha expirado.');
@@ -223,5 +236,46 @@ export class ViewController {
             res.setHeader("Content-Type", "text/html");
             res.status(200).render("login", { message: "El token ha expirado o es incorrecto, por favor intente de nuevo." });
         }
-    }
-}
+    };
+
+    static purchase = async (req, res, next) => {
+        try {
+            if (!req.user || !req.user.cart) {
+                return next(CustomError.createError("purchase --> viewController", "El carrito no existe", `No existe un carrito con el ID: ${cartId}`, TIPOS_ERROR.NOT_FOUND));
+            }
+
+            let cart = { _id: req.user.cart }
+            const cartId = req.user.cart;
+            const result = await processPurchase(cartId, req.user.email);
+
+            const purchaseData = {
+                ticketId: result.ticket._id,
+                amount: result.ticket.amount,
+                purchaser: result.ticket.purchaser,
+                productosProcesados: result.productosParaFacturar,
+                productosNoProcesados: result.productosRestantes,
+                cartId: cartId
+            };
+
+            return res.render("purchase", {
+                payload: purchaseData,
+                processedAmount: result.totalAmount,
+                notProcessedAmount: result.productosRestantes.reduce((total, item) => total + (item.product.price * item.quantity), 0),
+                user: req.user,
+                login: req.user,
+                cart
+            });
+        } catch (error) {
+            return next(error);
+        }
+    };
+
+    static adminPanel = async (req, res) => {
+        const userId = req.user._id;
+        const user = req.user;
+        let cart = { _id: req.user.cart };
+        const users = await userService.getAllUser();
+
+        res.render('adminPanel', { body: 'adminPanel', isAdminPanel: true, user, users, userId, login: req.user, cart, isAdmin: user.rol === 'admin' });
+    };
+};

@@ -61,9 +61,7 @@ export const loggerDev = winston.createLogger(
                     format: winston.format.combine(
                         winston.format.colorize({ colors: customColors }),
                         winston.format.timestamp(),
-                        // winston.format.json(),
                         winston.format.simple(),
-                        // winston.format.prettyPrint(),
                         winston.format.errors({ stack: true })
                     )
                 }

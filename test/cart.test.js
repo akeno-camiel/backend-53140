@@ -78,20 +78,13 @@ describe("Pruebas Carts", function () {
     });
 
     it("Prueba de addProductByID", async () => {
-        const cart = await cartService.addProductToCart(cartId, testProduct._id);
-        console.log("Carrito después de agregar el producto:", cart);
-        console.log("ID del carrito:", cart._id.toString());
-        console.log("ID del producto agregado:", cart.products[0]?.product.toString());
-        
-        
+        const cart = await cartService.addProductToCart(cartId, testProduct._id);     
         expect(cart.products).to.be.a("array").and.not.have.length(0);
         expect(cart).to.have.property("_id");
         expect(cart._id.toString()).to.be.equal(cartId.toString());
         expect(cart).to.have.property("products").that.is.an("array").that.is.not.empty;
         const addedProduct = cart.products[0];
         expect(addedProduct).to.have.property("_id");
-        console.log("ADDED PRODUCT" + addedProduct)
-        console.log("TEST PRODUCT" + testProduct)
         expect(addedProduct.product._id.toString()).to.be.equal(testProduct._id.toString());
     });
     
